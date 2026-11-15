@@ -1,0 +1,7 @@
+.godot/
+exports/
+build/
+*.tmp
+/android/
+.import_cache/
+
