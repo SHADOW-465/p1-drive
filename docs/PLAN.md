@@ -293,7 +293,7 @@ Real-HW check (manual, after T24 and after every later milestone): `play.bat --f
    - memory bounded: `Performance.MEMORY_STATIC` and `OBJECT_NODE_COUNT` at the end of the return trip ≤ 1.15 × their value at the same place on the way out; `OBJECT_ORPHAN_NODE_COUNT == 0`;
    - main-thread frame work time (measured with `Time.get_ticks_usec`, not rendered FPS): logs avg / p99 / max; fail if p99 > 8 ms or max > 25 ms after warm-up. (Headless has no GPU, so this guards CPU hitches only; GPU side is the manual `--fps-log` run.)
    - prints `STREAM PASS`/`STREAM FAIL: <reason>`, `quit(0|1)`.
-5. `tools/run_gates.bat` runs 1, 2, 4 in order, prints one PASS/FAIL line per gate, exits non-zero on any failure. `play.bat` in repo root: `"%GODOT%" --path "%~dp0" -- %*`.
+5. `tools/run_gates.bat` runs 1, 2, 4 in order, prints one PASS/FAIL line per gate, exits non-zero on any failure. `play.bat` in repo root: `"%GODOT%" --path "%~dp0." -- %*` (the trailing `.` stops `\"` from escaping the quote).
 
 ## 9. Acceptance criteria per feature
 
