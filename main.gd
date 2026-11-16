@@ -5,7 +5,7 @@ extends Node3D
 @onready var world: TileStreamer = $World
 @onready var sky: DayNight = $Sky
 var rig: CameraRig
-var debug: Label
+var hud: HUD
 var pause_menu: PauseMenu
 var _fade: ColorRect
 var _boot_ready: bool = false
@@ -43,9 +43,10 @@ func _ready() -> void:
 	var ui := CanvasLayer.new()
 	ui.name = "UI"
 	add_child(ui)
-	debug = Label.new()
-	debug.position = Vector2(16.0, 12.0)
-	ui.add_child(debug)
+	hud = (preload("res://ui/hud.tscn") as PackedScene).instantiate() as HUD
+	hud.car = car
+	hud.sky = sky
+	ui.add_child(hud)
 	pause_menu = (preload("res://ui/pause_menu.tscn") as PackedScene).instantiate() as PauseMenu
 	pause_menu.respawn_requested.connect(_respawn)
 	pause_menu.quit_requested.connect(quit_game)
@@ -104,8 +105,6 @@ func _process(dt: float) -> void:
 		_fade.color.a = _fade_a
 		if _fade_a <= 0.0:
 			_fade.visible = false
-	var d_tag: String = "  DRIFT" if car.drift_mode else ""
-	debug.text = "%d km/h  G%s  %d rpm  %s%s" % [car.speed_kmh, car.drivetrain.gear_label(), car.drivetrain.rpm, (car.get_node("Aero") as ActiveAero).state_name(), d_tag]
 	if _boot_ready:
 		_frames += 1
 		if _shot_at > 0 and _frames == _shot_at:  # dev: --shot=<frame> saves logs/shot.png and quits

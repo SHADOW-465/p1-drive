@@ -39,7 +39,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 
 ## Milestone B — towns, HUD, menus, radio, weather
 - [ ] [OTHER] T27 Procedural towns
-- [ ] [OTHER] T28 HUD
+- [x] [OTHER] T28 HUD — ui/hud.tscn + ui/hud.gd (speed, gear, RPM bar with redline + boost, aero/drift state, time, radio text, F3 FPS toggle; <= 5 draw calls; removed debug label)
 - [ ] [OTHER] T29 Settings + pause menu
 - [ ] [OTHER] T30 Radio
 - [ ] [OTHER] T31 Minimap (optional)
