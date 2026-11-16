@@ -4,6 +4,8 @@ extends Node3D
 
 static var terrain_mat: ShaderMaterial
 static var road_mat: ShaderMaterial
+static var props_mat: ShaderMaterial
+static var props_glow_mat: ShaderMaterial
 static var step_ms: Dictionary[StringName, float] = {}  # worst time per apply step (dev stat)
 
 var tx: int
@@ -26,6 +28,10 @@ func setup(d: Dictionary) -> void:
 		_steps.append(_road_mesh)
 	if d.has("road_faces"):
 		_steps.append(_road_collider)
+	if d.has("props"):
+		_steps.append(_props_mesh)
+	if d.has("prop_faces"):
+		_steps.append(_props_collider)
 
 
 ## Runs one apply step; false when the tile is complete.
@@ -88,6 +94,37 @@ func _road_mesh() -> void:
 	if road_mat == null:
 		road_mat = _material("res://shaders/road.gdshader")
 	_add_mesh("Road", data["road"], road_mat)
+
+
+func _props_mesh() -> void:
+	if props_mat == null:
+		props_mat = _material("res://shaders/props.gdshader")
+	var pd: Dictionary = data["props"]
+	var mi: MeshInstance3D = _add_mesh("Props", pd, props_mat)
+	if pd.has("glow"):
+		if props_glow_mat == null:
+			props_glow_mat = _material("res://shaders/props_glow.gdshader")
+		var gd: Dictionary = pd["glow"]
+		var arr: Array = []
+		arr.resize(Mesh.ARRAY_MAX)
+		arr[Mesh.ARRAY_VERTEX] = gd["verts"]
+		arr[Mesh.ARRAY_NORMAL] = gd["norms"]
+		arr[Mesh.ARRAY_TEX_UV] = gd["uvs"]
+		arr[Mesh.ARRAY_COLOR] = gd["cols"]
+		arr[Mesh.ARRAY_INDEX] = gd["idx"]
+		var mesh := mi.mesh as ArrayMesh
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
+		mesh.surface_set_material(1, props_glow_mat)
+
+
+func _props_collider() -> void:
+	var shape := ConcavePolygonShape3D.new()
+	shape.backface_collision = true
+	shape.set_faces(data["prop_faces"])
+	var cs := CollisionShape3D.new()
+	cs.name = "PropsShape"
+	cs.shape = shape
+	body().add_child(cs)
 
 
 func _road_collider() -> void:

@@ -32,6 +32,8 @@ static func build(tx: int, tz: int, lod: int) -> Dictionary:
 	_terrain(d, n, lod, h, cols)
 	if lod != FAR:
 		RoadMesher.mesh(d, tx, tz, lod)
+	if lod == FULL:
+		RoadMesher.props(d, tx, tz)
 	d["ms"] = (Time.get_ticks_usec() - t0) / 1000.0
 	return d
 

@@ -256,3 +256,200 @@ static func _pad(node: int, origin: Vector3, verts: PackedVector3Array, uvs: Pac
 		idx.append_array([base, a, b])
 		if rim[k].w != rim[(k + 1) % n].w:
 			idx.append_array([b + 1, a + 1, a + 2, b + 1, a + 2, b + 2])
+
+
+## Road props for FULL tiles (T18): guardrails (+ collision strips) and streetlights (+ glow quads).
+static func props(d: Dictionary, tx: int, tz: int) -> void:
+	var runs: Array = RoadGraph.runs_in_tile(tx, tz)
+	if runs.is_empty():
+		return
+	var origin := Vector3(tx * TILE, 0.0, tz * TILE)
+	var verts := PackedVector3Array()
+	var norms := PackedVector3Array()
+	var cols := PackedColorArray()
+	var idx := PackedInt32Array()
+	var g_verts := PackedVector3Array()
+	var g_norms := PackedVector3Array()
+	var g_uvs := PackedVector2Array()
+	var g_cols := PackedColorArray()
+	var g_idx := PackedInt32Array()
+	var faces := PackedVector3Array()
+	var rail_col := Color(0.56, 0.58, 0.62, 0.0).srgb_to_linear()
+	var post_col := Color(0.28, 0.30, 0.33, 0.0).srgb_to_linear()
+	var median_col := Color(0.45, 0.46, 0.48, 0.0).srgb_to_linear()
+	var pole_col := Color(0.22, 0.24, 0.27, 0.0).srgb_to_linear()
+	var lamp_col := Color(1.0, 0.86, 0.62, 1.0)  # alpha > 0.5 => emissive in props.gdshader
+	var glow_col := Color(1.0, 0.84, 0.56, 1.0)
+	for r: Vector3i in runs:
+		var e: int = r.x
+		var type: int = RoadGraph.e_type[e]
+		var pts: PackedVector3Array = RoadGraph.e_pts[e]
+		var rng: Vector2i = edge_range(e)
+		var i: int = maxi(r.y, rng.x)
+		var end: int = mini(r.z, rng.y - 1)
+		var hw: float = RoadGraph.WIDTH[type] * 0.5
+		while i <= end:
+			if not _in_tile(pts[i], tx, tz):
+				i += 1
+				continue
+			var s: int = i
+			while i <= end and _in_tile(pts[i], tx, tz):
+				i += 1
+			# Guardrails
+			if type == RoadGraph.HIGHWAY:
+				_rail_strip(e, s, i, origin, -(hw + 0.35), 0.07, 0.42, 0.78, rail_col, post_col, true, verts, norms, cols, idx, faces)
+				_rail_strip(e, s, i, origin, hw + 0.35, 0.07, 0.42, 0.78, rail_col, post_col, true, verts, norms, cols, idx, faces)
+				_rail_strip(e, s, i, origin, 0.0, 0.24, 0.0, 0.76, median_col, median_col, false, verts, norms, cols, idx, faces)
+			elif type == RoadGraph.COUNTRY or type == RoadGraph.MOUNTAIN:
+				_conditional_rails(e, s, i, origin, type, hw, rail_col, post_col, verts, norms, cols, idx, faces)
+			# Streetlights
+			if type == RoadGraph.CITY:
+				for k: int in range(s, i):
+					if k % 7 == 0:
+						var side: float = -1.0 if ((k / 7) % 2 == 0) else 1.0
+						var p: Vector3 = pts[k] - origin
+						var fwd: Vector3 = RoadGraph.tangent(e, k)
+						var rt: Vector3 = fwd.cross(Vector3.UP).normalized()
+						_add_lamp(p + rt * (side * (hw + 0.6)), fwd, rt * (-side), 6.2, 1.5, pole_col, lamp_col, glow_col, verts, norms, cols, idx, g_verts, g_norms, g_uvs, g_cols, g_idx)
+			elif type == RoadGraph.HIGHWAY:
+				var na: Vector3 = RoadGraph.nodes[RoadGraph.e_a[e]]
+				var nb: Vector3 = RoadGraph.nodes[RoadGraph.e_b[e]]
+				for k: int in range(s, i):
+					if k % 12 == 0:
+						var pw: Vector3 = pts[k]
+						var near_node: bool = pw.distance_squared_to(na) < 22500.0 or pw.distance_squared_to(nb) < 22500.0
+						var near_city: bool = TerrainFn.biome_weights(pw.x, pw.z)[TerrainFn.CITY] > 0.15
+						if near_node or near_city:
+							var p: Vector3 = pw - origin
+							var fwd: Vector3 = RoadGraph.tangent(e, k)
+							var rt: Vector3 = fwd.cross(Vector3.UP).normalized()
+							_add_twin_lamp(p, fwd, rt, 7.2, 1.6, pole_col, lamp_col, glow_col, verts, norms, cols, idx, g_verts, g_norms, g_uvs, g_cols, g_idx)
+	if not verts.is_empty():
+		var props_d: Dictionary = {"verts": verts, "norms": norms, "cols": cols, "idx": idx}
+		if not g_verts.is_empty():
+			props_d["glow"] = {"verts": g_verts, "norms": g_norms, "uvs": g_uvs, "cols": g_cols, "idx": g_idx}
+		d["props"] = props_d
+	if not faces.is_empty():
+		d["prop_faces"] = faces
+
+
+static func _conditional_rails(e: int, s: int, end_i: int, origin: Vector3, type: int, hw: float, rail_col: Color, post_col: Color, verts: PackedVector3Array, norms: PackedVector3Array, cols: PackedColorArray, idx: PackedInt32Array, faces: PackedVector3Array) -> void:
+	var pts: PackedVector3Array = RoadGraph.e_pts[e]
+	for side: int in [-1, 1]:
+		var run_start: int = -1
+		for k: int in range(s, end_i + 1, 2):
+			var ki: int = mini(k, end_i)
+			var p: Vector3 = pts[ki]
+			var rt: Vector3 = RoadGraph.tangent(e, ki).cross(Vector3.UP).normalized()
+			var sp_l: Vector3 = p - rt * (hw + 6.0)
+			var sp_r: Vector3 = p + rt * (hw + 6.0)
+			var hl: float = TerrainFn.base_height(sp_l.x, sp_l.z)
+			var hr: float = TerrainFn.base_height(sp_r.x, sp_r.z)
+			var need: bool = false
+			if type == RoadGraph.COUNTRY:
+				var h_side: float = hl if side < 0 else hr
+				need = (p.y - h_side) > 3.0
+			else:  # MOUNTAIN: downhill side
+				var h_side: float = hl if side < 0 else hr
+				var h_other: float = hr if side < 0 else hl
+				need = (h_side < h_other - 0.5) and (p.y - h_side > 1.0)
+			if need:
+				if run_start < 0:
+					run_start = ki
+			elif run_start >= 0:
+				if ki - run_start >= 2:
+					_rail_strip(e, run_start, ki, origin, side * (hw + 0.35), 0.07, 0.42, 0.78, rail_col, post_col, true, verts, norms, cols, idx, faces)
+				run_start = -1
+		if run_start >= 0 and end_i - run_start >= 2:
+			_rail_strip(e, run_start, end_i, origin, side * (hw + 0.35), 0.07, 0.42, 0.78, rail_col, post_col, true, verts, norms, cols, idx, faces)
+
+
+static func _rail_strip(e: int, s: int, end_i: int, origin: Vector3, lat: float, half_w: float, y0: float, y1: float, col: Color, post_col: Color, with_posts: bool, verts: PackedVector3Array, norms: PackedVector3Array, cols: PackedColorArray, idx: PackedInt32Array, faces: PackedVector3Array) -> void:
+	var pts: PackedVector3Array = RoadGraph.e_pts[e]
+	var steps: PackedInt32Array = []
+	var k: int = s
+	while k < end_i:
+		steps.append(k)
+		k += 2
+	steps.append(end_i)
+	var prev_c := Vector3.ZERO
+	var prev_rt := Vector3.ZERO
+	var has_prev: bool = false
+	for si: int in steps.size():
+		var ki: int = steps[si]
+		var fwd: Vector3 = RoadGraph.tangent(e, ki)
+		var rt: Vector3 = fwd.cross(Vector3.UP).normalized()
+		var c: Vector3 = pts[ki] - origin + rt * lat
+		if has_prev:
+			_add_prism_seg(prev_c, prev_rt, c, rt, half_w, y0, y1, col, verts, norms, cols, idx)
+			# Vertical collision strip from ground to 0.95m (backface_collision = true on shape)
+			var a0: Vector3 = prev_c
+			var a1: Vector3 = prev_c + Vector3(0.0, 0.95, 0.0)
+			var b0: Vector3 = c
+			var b1: Vector3 = c + Vector3(0.0, 0.95, 0.0)
+			faces.append_array([a0, b0, a1, a1, b0, b1])
+		if with_posts and si % 2 == 0:
+			_add_box(c + Vector3(0.0, y1 * 0.5, 0.0), fwd, rt, Vector3(0.11, y1, 0.11), post_col, verts, norms, cols, idx)
+		prev_c = c
+		prev_rt = rt
+		has_prev = true
+
+
+static func _add_prism_seg(c0: Vector3, rt0: Vector3, c1: Vector3, rt1: Vector3, hw: float, y0: float, y1: float, col: Color, verts: PackedVector3Array, norms: PackedVector3Array, cols: PackedColorArray, idx: PackedInt32Array) -> void:
+	var l0b: Vector3 = c0 - rt0 * hw + Vector3(0.0, y0, 0.0)
+	var l0t: Vector3 = c0 - rt0 * hw + Vector3(0.0, y1, 0.0)
+	var r0t: Vector3 = c0 + rt0 * hw + Vector3(0.0, y1, 0.0)
+	var r0b: Vector3 = c0 + rt0 * hw + Vector3(0.0, y0, 0.0)
+	var l1b: Vector3 = c1 - rt1 * hw + Vector3(0.0, y0, 0.0)
+	var l1t: Vector3 = c1 - rt1 * hw + Vector3(0.0, y1, 0.0)
+	var r1t: Vector3 = c1 + rt1 * hw + Vector3(0.0, y1, 0.0)
+	var r1b: Vector3 = c1 + rt1 * hw + Vector3(0.0, y0, 0.0)
+	var nl: Vector3 = -0.5 * (rt0 + rt1)
+	var nr: Vector3 = 0.5 * (rt0 + rt1)
+	_quad(l0b, l0t, l1t, l1b, nl, col, verts, norms, cols, idx)
+	_quad(l0t, r0t, r1t, l1t, Vector3.UP, col, verts, norms, cols, idx)
+	_quad(r0t, r0b, r1b, r1t, nr, col, verts, norms, cols, idx)
+
+
+static func _add_lamp(base: Vector3, fwd: Vector3, inward: Vector3, h: float, reach: float, pole_col: Color, lamp_col: Color, glow_col: Color, verts: PackedVector3Array, norms: PackedVector3Array, cols: PackedColorArray, idx: PackedInt32Array, g_verts: PackedVector3Array, g_norms: PackedVector3Array, g_uvs: PackedVector2Array, g_cols: PackedColorArray, g_idx: PackedInt32Array) -> void:
+	_add_box(base + Vector3(0.0, h * 0.5, 0.0), fwd, inward, Vector3(0.14, h, 0.14), pole_col, verts, norms, cols, idx)
+	_add_box(base + Vector3(0.0, h - 0.08, 0.0) + inward * (reach * 0.5), fwd, inward, Vector3(reach, 0.10, 0.12), pole_col, verts, norms, cols, idx)
+	var head_c: Vector3 = base + Vector3(0.0, h - 0.14, 0.0) + inward * reach
+	_add_box(head_c, fwd, inward, Vector3(0.45, 0.10, 0.24), lamp_col, verts, norms, cols, idx)
+	_add_glow_quad(base + inward * reach + Vector3(0.0, 0.04, 0.0), fwd, inward, 5.2, glow_col, g_verts, g_norms, g_uvs, g_cols, g_idx)
+
+
+static func _add_twin_lamp(base: Vector3, fwd: Vector3, rt: Vector3, h: float, reach: float, pole_col: Color, lamp_col: Color, glow_col: Color, verts: PackedVector3Array, norms: PackedVector3Array, cols: PackedColorArray, idx: PackedInt32Array, g_verts: PackedVector3Array, g_norms: PackedVector3Array, g_uvs: PackedVector2Array, g_cols: PackedColorArray, g_idx: PackedInt32Array) -> void:
+	_add_box(base + Vector3(0.0, h * 0.5, 0.0), fwd, rt, Vector3(0.16, h, 0.16), pole_col, verts, norms, cols, idx)
+	_add_box(base + Vector3(0.0, h - 0.08, 0.0), fwd, rt, Vector3(reach * 2.0, 0.11, 0.13), pole_col, verts, norms, cols, idx)
+	for s: float in [-1.0, 1.0]:
+		_add_box(base + Vector3(0.0, h - 0.15, 0.0) + rt * (s * reach), fwd, rt, Vector3(0.48, 0.10, 0.26), lamp_col, verts, norms, cols, idx)
+		_add_glow_quad(base + rt * (s * reach) + Vector3(0.0, 0.04, 0.0), fwd, rt, 6.0, glow_col, g_verts, g_norms, g_uvs, g_cols, g_idx)
+
+
+static func _add_glow_quad(c: Vector3, fwd: Vector3, rt: Vector3, half_sz: float, col: Color, verts: PackedVector3Array, norms: PackedVector3Array, uvs: PackedVector2Array, cols: PackedColorArray, idx: PackedInt32Array) -> void:
+	var b: int = verts.size()
+	verts.append_array([c - rt * half_sz - fwd * half_sz, c + rt * half_sz - fwd * half_sz, c + rt * half_sz + fwd * half_sz, c - rt * half_sz + fwd * half_sz])
+	norms.append_array([Vector3.UP, Vector3.UP, Vector3.UP, Vector3.UP])
+	uvs.append_array([Vector2(0.0, 0.0), Vector2(1.0, 0.0), Vector2(1.0, 1.0), Vector2(0.0, 1.0)])
+	cols.append_array([col, col, col, col])
+	idx.append_array([b, b + 1, b + 2, b, b + 2, b + 3])
+
+
+static func _add_box(c: Vector3, fwd: Vector3, rt: Vector3, sz: Vector3, col: Color, verts: PackedVector3Array, norms: PackedVector3Array, cols: PackedColorArray, idx: PackedInt32Array) -> void:
+	var rx: Vector3 = rt * (sz.x * 0.5)
+	var ry: Vector3 = Vector3.UP * (sz.y * 0.5)
+	var rz: Vector3 = fwd * (sz.z * 0.5)
+	_quad(c - rx - ry - rz, c - rx + ry - rz, c - rx + ry + rz, c - rx - ry + rz, -rt, col, verts, norms, cols, idx)
+	_quad(c + rx - ry + rz, c + rx + ry + rz, c + rx + ry - rz, c + rx - ry - rz, rt, col, verts, norms, cols, idx)
+	_quad(c - rx - ry + rz, c - rx + ry + rz, c + rx + ry + rz, c + rx - ry + rz, fwd, col, verts, norms, cols, idx)
+	_quad(c + rx - ry - rz, c + rx + ry - rz, c - rx + ry - rz, c - rx - ry - rz, -fwd, col, verts, norms, cols, idx)
+	_quad(c - rx + ry - rz, c + rx + ry - rz, c + rx + ry + rz, c - rx + ry + rz, Vector3.UP, col, verts, norms, cols, idx)
+
+
+static func _quad(p0: Vector3, p1: Vector3, p2: Vector3, p3: Vector3, n: Vector3, col: Color, verts: PackedVector3Array, norms: PackedVector3Array, cols: PackedColorArray, idx: PackedInt32Array) -> void:
+	var b: int = verts.size()
+	verts.append_array([p0, p1, p2, p3])
+	norms.append_array([n, n, n, n])
+	cols.append_array([col, col, col, col])
+	idx.append_array([b, b + 1, b + 2, b, b + 2, b + 3])
