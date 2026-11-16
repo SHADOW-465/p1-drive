@@ -31,7 +31,12 @@ var fail: String = ""
 func _ready() -> void:
 	Engine.max_fps = 60
 	Origin.reset()
-	pts = ROUTE.duplicate()
+	pts = PackedVector2Array([ROUTE[0]])
+	for e: int in mini(4, RoadGraph.e_pts.size()):
+		var ep: PackedVector3Array = RoadGraph.e_pts[e]
+		for i: int in range(0, ep.size(), 12):
+			pts.append(Vector2(ep[i].x, ep[i].z))
+	pts.append_array(ROUTE.slice(1))
 	pts.append(ROUTE[0])
 	wpos = Vector3(pts[0].x, 0.0, pts[0].y)
 	Origin.offset = Vector3(roundf(wpos.x / 1024.0), 0.0, roundf(wpos.z / 1024.0)) * 1024.0
