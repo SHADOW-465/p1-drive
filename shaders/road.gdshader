@@ -5,6 +5,17 @@ shader_type spatial;
 global uniform float wetness;
 global uniform float night_factor;
 
+float hash(vec2 p) {
+	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+float vnoise(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	f = f * f * (3.0 - 2.0 * f);
+	return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+
 float band(float x, float c, float w) {
 	float aa = fwidth(x) + 0.001;
 	return 1.0 - smoothstep(w - aa, w + aa, abs(x - c));
@@ -28,12 +39,12 @@ void fragment() {
 	}
 	// markings fade out with distance to stop shimmer
 	line *= clamp(1.0 - fwidth(UV.y) * 0.25, 0.0, 1.0);
-	float n = fract(sin(dot(floor(UV * 3.0), vec2(12.9898, 78.233))) * 43758.5453);
-	vec3 asphalt = vec3(0.085, 0.085, 0.095) * (0.9 + 0.2 * n);
+	float n = vnoise(UV * 5.0) * 0.5 + vnoise(UV * 0.6) * 0.5;
+	vec3 asphalt = vec3(0.07, 0.07, 0.078) * (0.86 + 0.28 * n);
 	vec3 col = mix(asphalt, vec3(0.8), line * 0.9);
 	float wet = wetness;
 	if (COLOR.b > 0.75) {
-		col = vec3(0.21, 0.19, 0.13);
+		col = vec3(0.17, 0.155, 0.105) * (0.8 + 0.4 * n);
 		wet *= 0.3;
 	} else if (COLOR.b > 0.25) {
 		col = vec3(0.42, 0.42, 0.40) * (0.92 + 0.08 * n);

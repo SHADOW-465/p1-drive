@@ -3,6 +3,8 @@ extends Node3D
 ## Main-thread side of a tile (PLAN 2.2): turns TileGen data into meshes/shapes in small steps.
 
 static var terrain_mat: ShaderMaterial
+static var road_mat: ShaderMaterial
+static var step_ms: Dictionary[StringName, float] = {}  # worst time per apply step (dev stat)
 
 var tx: int
 var tz: int
@@ -20,12 +22,20 @@ func setup(d: Dictionary) -> void:
 	_steps = [_terrain_mesh]
 	if d.has("hm"):
 		_steps.append(_terrain_collider)
+	if d.has("road"):
+		_steps.append(_road_mesh)
+	if d.has("road_faces"):
+		_steps.append(_road_collider)
 
 
 ## Runs one apply step; false when the tile is complete.
 func step() -> bool:
 	if not _steps.is_empty():
-		(_steps.pop_front() as Callable).call()
+		var c: Callable = _steps.pop_front()
+		var t0: int = Time.get_ticks_usec()
+		c.call()
+		var k: StringName = c.get_method()
+		step_ms[k] = maxf(step_ms.get(k, 0.0), (Time.get_ticks_usec() - t0) / 1000.0)
 	if _steps.is_empty():
 		data = {}
 		return false
@@ -41,24 +51,52 @@ func body() -> StaticBody3D:
 	return b
 
 
-func _terrain_mesh() -> void:
-	if terrain_mat == null:
-		terrain_mat = ShaderMaterial.new()
-		terrain_mat.shader = load("res://shaders/terrain.gdshader") as Shader
+static func _material(path: String) -> ShaderMaterial:
+	var m := ShaderMaterial.new()
+	m.shader = load(path) as Shader
+	return m
+
+
+## MeshInstance3D child from a {verts, norms, cols, idx[, uvs]} dictionary.
+func _add_mesh(node_name: String, a: Dictionary, mat: Material) -> MeshInstance3D:
 	var arr: Array = []
 	arr.resize(Mesh.ARRAY_MAX)
-	arr[Mesh.ARRAY_VERTEX] = data["verts"]
-	arr[Mesh.ARRAY_NORMAL] = data["norms"]
-	arr[Mesh.ARRAY_COLOR] = data["cols"]
-	arr[Mesh.ARRAY_INDEX] = data["idx"]
+	arr[Mesh.ARRAY_VERTEX] = a["verts"]
+	arr[Mesh.ARRAY_NORMAL] = a["norms"]
+	arr[Mesh.ARRAY_COLOR] = a["cols"]
+	arr[Mesh.ARRAY_INDEX] = a["idx"]
+	if a.has("uvs"):
+		arr[Mesh.ARRAY_TEX_UV] = a["uvs"]
 	var mesh := ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
-	mesh.surface_set_material(0, terrain_mat)
+	mesh.surface_set_material(0, mat)
 	var mi := MeshInstance3D.new()
-	mi.name = "Terrain"
+	mi.name = node_name
 	mi.mesh = mesh
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(mi)
+	return mi
+
+
+func _terrain_mesh() -> void:
+	if terrain_mat == null:
+		terrain_mat = _material("res://shaders/terrain.gdshader")
+	_add_mesh("Terrain", data, terrain_mat)
+
+
+func _road_mesh() -> void:
+	if road_mat == null:
+		road_mat = _material("res://shaders/road.gdshader")
+	_add_mesh("Road", data["road"], road_mat)
+
+
+func _road_collider() -> void:
+	var shape := ConcavePolygonShape3D.new()
+	shape.set_faces(data["road_faces"])
+	var cs := CollisionShape3D.new()
+	cs.name = "RoadShape"
+	cs.shape = shape
+	body().add_child(cs)
 
 
 func _terrain_collider() -> void:

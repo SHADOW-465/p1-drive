@@ -6,7 +6,7 @@ extends RefCounted
 enum { FULL, MID, FAR }
 const TILE: float = 1024.0
 const GRID: PackedInt32Array = [129, 33, 17]  # vertices per side, per LOD
-const SKIRT: PackedFloat32Array = [6.0, 20.0, 40.0]  # skirt drop, hides LOD cracks
+const SKIRT: PackedFloat32Array = [12.0, 24.0, 40.0]  # skirt drop, hides LOD cracks
 const SNOW_Y: float = 320.0
 
 static var _indices: Array[PackedInt32Array] = []
@@ -27,7 +27,11 @@ static func build(tx: int, tz: int, lod: int) -> Dictionary:
 	var n: int = GRID[lod]
 	var cols := PackedColorArray()
 	var h: PackedFloat32Array = _heights(tx, tz, n, cols)
+	if lod != FAR:
+		RoadMesher.stamp(tx, tz, n, lod, h, cols)
 	_terrain(d, n, lod, h, cols)
+	if lod != FAR:
+		RoadMesher.mesh(d, tx, tz, lod)
 	d["ms"] = (Time.get_ticks_usec() - t0) / 1000.0
 	return d
 

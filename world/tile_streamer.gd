@@ -5,7 +5,7 @@ extends Node3D
 
 const HYST: float = 96.0
 const APPLY_BUDGET_US: int = 2000
-const MAX_JOBS: int = 3
+const MAX_JOBS: int = 2  # leaves cores for the main thread; 3 caused apply hitches
 const MAX_FREES: int = 2
 
 class Slot:
@@ -76,11 +76,18 @@ func _process(_dt: float) -> void:
 	var t0: int = Time.get_ticks_usec()
 	if _update_centre(Origin.to_world(target.position)):
 		_update_wants()
+	var t1: int = Time.get_ticks_usec()
 	_collect()
+	var t2: int = Time.get_ticks_usec()
 	_submit()
+	var t3: int = Time.get_ticks_usec()
 	_apply()
+	var t4: int = Time.get_ticks_usec()
 	for i: int in mini(MAX_FREES, _free_q.size()):
 		(_free_q.pop_back() as TileNode).queue_free()
+	var t5: int = Time.get_ticks_usec()
+	if t5 - t0 > 20000:
+		print("streamer hitch (us): wants %d collect %d submit %d apply %d free %d" % [t1 - t0, t2 - t1, t3 - t2, t4 - t3, t5 - t4])
 	FpsLog.tiles_full = full_count
 	FpsLog.tiles_lod = lod_count
 	frame_ms = (Time.get_ticks_usec() - t0) / 1000.0
@@ -133,6 +140,11 @@ func _collect() -> void:
 	_results = []
 	_mutex.unlock()
 	for r: Array in res:
+		if not WorkerThreadPool.is_task_completed(_jobs[r[0]]):
+			_mutex.lock()  # result pushed but the task has not returned yet: next frame, no blocking
+			_results.append(r)
+			_mutex.unlock()
+			continue
 		WorkerThreadPool.wait_for_task_completion(_jobs[r[0]])
 		_jobs.erase(r[0])
 		var data: Dictionary = r[2]

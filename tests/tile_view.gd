@@ -9,6 +9,8 @@ var hms: Dictionary = {}  # Vector2i tile -> collider heights
 var centre: Vector2i
 var f: int = 0
 var _shot_at: int = 0
+var on_road: bool = false
+var roads: Array[Array] = []  # [tile origin (world), verts, cols]
 var step_ms: Dictionary[int, float] = {}
 
 
@@ -24,6 +26,8 @@ func _ready() -> void:
 			var d: Dictionary = TileGen.build(centre.x + dx, centre.y + dz, TileGen.FULL)
 			ms += d["ms"]
 			hms[Vector2i(centre.x + dx, centre.y + dz)] = d["hm"]
+			if d.has("road"):
+				roads.append([Vector3(centre.x + dx, 0.0, centre.y + dz) * TileGen.TILE, d["road"]["verts"], d["road"]["cols"]])
 			var tile := TileNode.new()
 			tile.setup(d)
 			tile.position = Origin.to_local(Vector3(tile.tx, 0.0, tile.tz) * TileGen.TILE)
@@ -38,6 +42,10 @@ func _ready() -> void:
 	print("tile build avg %.1f ms; max apply ms per step %s" % [ms / 9.0, step_ms])
 	car = (load("res://cars/p1/p1.tscn") as PackedScene).instantiate() as Car
 	car.position = Vector3(0.0, surface(Origin.offset.x, Origin.offset.z) + 0.6, 0.0)
+	var np: Dictionary = RoadGraph.nearest_point(Origin.offset, 1000.0)
+	if not np.is_empty():
+		on_road = true
+		car.transform = Transform3D(Basis.looking_at(np["tangent"]), Origin.to_local(np["pos"]) + Vector3(0.0, 0.3, 0.0))
 	add_child(car)
 	rig = CameraRig.new()
 	rig.car = car
@@ -95,12 +103,29 @@ func _check() -> String:
 		if hit.is_empty():
 			return "no ground at %s" % p
 		var w: Vector3 = Origin.to_world(p)
+		if not RoadGraph.nearest_point(w, 40.0).is_empty():
+			continue  # the ray would hit the road collider
 		worst = maxf(worst, absf((hit["position"] as Vector3).y - surface(w.x, w.z)))
 	print("collider vs mesh: worst %.3f m" % worst)
 	if worst > 0.05:
 		return "collider off by %.2f m" % worst
+	# terrain must stay under the paved surface (vertex pairs are left/right edges)
+	var gap: float = 1e9
+	for r: Array in roads:
+		var rv: PackedVector3Array = r[1]
+		var rc: PackedColorArray = r[2]
+		for k: int in range(0, rv.size() - 1, 2):
+			if rc[k].b < 0.25 and rc[k + 1].b < 0.25:
+				for t: float in [0.0, 0.25, 0.5, 0.75, 1.0]:
+					var w: Vector3 = (r[0] as Vector3) + rv[k].lerp(rv[k + 1], t)
+					if hms.has(Vector2i(floori(w.x / TileGen.TILE), floori(w.z / TileGen.TILE))):
+						gap = minf(gap, w.y - surface(w.x, w.z))
+	if not roads.is_empty():
+		print("min road clearance over terrain %.2f m" % gap)
+		if gap < 0.05:
+			return "terrain pokes through the road"
 	var cw: Vector3 = Origin.to_world(car.position)
-	var rest: float = car.position.y - surface(cw.x, cw.z)
+	var rest: float = car.position.y - surface(cw.x, cw.z) - (RoadMesher.OFF if on_road else 0.0)
 	print("car rest height above surface %.3f m, wheels %d" % [rest, car.wheels_in_contact()])
 	if car.wheels_in_contact() < 4 or absf(rest) > 0.3 or car.global_basis.y.y < 0.8:
 		return "car not resting on the terrain"

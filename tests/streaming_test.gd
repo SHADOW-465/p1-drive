@@ -73,7 +73,7 @@ func _process(_dt: float) -> void:
 				mem0 = Performance.get_monitor(Performance.MEMORY_STATIC)
 				nodes0 = Performance.get_monitor(Performance.OBJECT_NODE_COUNT)
 				phase = 1
-			elif f > 3600:
+			elif Time.get_ticks_msec() > 90000:
 				fail = "warm-up timeout"
 		1:  # out and back
 			frame_ms.append(world.frame_ms)
@@ -141,6 +141,7 @@ func _finish() -> void:
 		for v: float in frame_ms:
 			sum += v
 		print("streamer frame ms: avg %.2f p99 %.2f max %.2f | max step %.2f, max job %.0f ms" % [sum / n, frame_ms[int(n * 0.99)], frame_ms[n - 1], world.max_step_ms, world.max_job_ms])
+		print("worst apply steps (ms): ", TileNode.step_ms)
 		print("tiles visited %d, origin shifts %d, stalls %d, max full %d, max total %d, max nodes %d" % [visited.size(), Origin.shifts, stalls, max_full, max_total, max_nodes])
 		if fail == "":
 			if frame_ms[int(n * 0.99)] > 8.0 or frame_ms[n - 1] > 25.0:

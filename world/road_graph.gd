@@ -9,7 +9,7 @@ const TYPE_NAMES: PackedStringArray = ["highway", "country", "mountain", "city"]
 const WIDTH: PackedFloat32Array = [22.0, 7.0, 6.5, 10.0]  # paved width
 const MAX_GRADE: PackedFloat32Array = [0.05, 0.08, 0.11, 0.06]
 const STEP: float = 4.0
-const MARGIN: float = 96.0  # index runs cover the tile grown by this (terrain stamping reach)
+const MARGIN: float = 128.0  # index runs cover the tile grown by this (terrain stamping reach)
 const TILE: float = 1024.0
 
 static var nodes: PackedVector3Array = []
