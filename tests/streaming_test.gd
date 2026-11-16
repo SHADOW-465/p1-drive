@@ -32,7 +32,7 @@ func _ready() -> void:
 	Engine.max_fps = 60
 	Origin.reset()
 	pts = PackedVector2Array([ROUTE[0]])
-	for e: int in mini(4, RoadGraph.e_pts.size()):
+	for e: int in mini(1, RoadGraph.e_pts.size()):
 		var ep: PackedVector3Array = RoadGraph.e_pts[e]
 		for i: int in range(0, ep.size(), 12):
 			pts.append(Vector2(ep[i].x, ep[i].z))

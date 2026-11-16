@@ -34,7 +34,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [ ] [FABLE] T22 Hero mechanism + hill pass
 - [ ] [FABLE] T23 City roads + flyover
 - [ ] [FABLE] T24 City overlay
-- [ ] [OTHER] T25 Network generator
+- [x] [OTHER] T25 Network generator — tools/gen_network.gd merges world_def routes/towns + data/hero/*.json, auto-splits XZ crossings, relaxes node heights + 2-pass grade clamp, validates connectivity/grade/radius -> 144.1 km (55.2 hwy, 60.9 country, 20.9 mtn, 7.1 city)
 - [ ] [FABLE] T26 Milestone A hardening (real-HW 60 FPS check)
 
 ## Milestone B — towns, HUD, menus, radio, weather
@@ -64,7 +64,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 | 0–100 km/h | 2.8–3.3 s | | T03 |
 | Top speed normal / DRS | 325–335 / 345–352 km/h | | T05 |
 | Worker time per FULL tile | ≤ 250 ms | | T13 |
-| Network length | ≥ 100 km | | T25 |
+| Network length | ≥ 100 km | 144.1 km | T25 |
 | Min FPS, 5 min autodrive, target HW | ≥ 57 | | T26 |
 
 ## Low/Medium baseline (other/lowmed)
