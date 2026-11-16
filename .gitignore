@@ -5,3 +5,5 @@ build/
 /android/
 .import_cache/
 
+logs/
+*.uid

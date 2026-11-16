@@ -3,7 +3,7 @@
 Tick a box in the same commit that finishes the task. Details and done-criteria: `docs/PLAN.md` §10.
 
 ## Milestone A — streaming world, solid P1, 50–150 km, city + hill pass
-- [ ] T01 Project skeleton + gate 1
+- [x] T01 Project skeleton + gate 1 — input map registered in code (autoload/settings.gd), *.uid git-ignored
 - [ ] T02 Test track + static sky
 - [ ] T03 P1 physics core
 - [ ] T04 Camera + playable loop
