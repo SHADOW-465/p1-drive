@@ -10,6 +10,7 @@ call :run check -s res://tools/check_scripts.gd
 call :run boot --quit
 if exist tests\smoke_test.tscn call :run smoke --fixed-fps 60 res://tests/smoke_test.tscn
 if exist tests\streaming_test.tscn call :run stream --fixed-fps 60 res://tests/streaming_test.tscn
+if exist tests\drive_test.tscn call :run drive --fixed-fps 60 res://tests/drive_test.tscn
 if %FAIL%==0 (echo GATES PASS) else (echo GATES FAIL)
 exit /b %FAIL%
 

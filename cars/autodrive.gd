@@ -35,6 +35,10 @@ func drive(car: Car) -> void:
 		idx = nxt
 
 	var look_w: Vector3 = _ahead_pos(28.0)
+	var lane_fwd: Vector3 = RoadGraph.tangent(edge, idx) * dir
+	lane_fwd.y = 0.0
+	if lane_fwd.length_squared() > 1e-4:  # follow the right-hand lane, not the median
+		look_w += lane_fwd.normalized().cross(Vector3.UP) * RoadGraph.lane_offset(edge)
 	var look_loc: Vector3 = Origin.to_local(look_w)
 	var rel: Vector3 = car.global_transform.inverse() * look_loc
 	var ang: float = atan2(rel.x, maxf(-rel.z, 0.5))

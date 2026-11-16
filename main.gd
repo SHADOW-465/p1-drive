@@ -24,8 +24,8 @@ func _ready() -> void:
 	if not RoadGraph.e_pts.is_empty():
 		var pts: PackedVector3Array = RoadGraph.e_pts[0]
 		var idx: int = mini(10, pts.size() - 1)
-		spawn_w = pts[idx]
 		spawn_fwd = RoadGraph.tangent(0, idx)
+		spawn_w = pts[idx] + _lane_shift(0, spawn_fwd)
 	Origin.offset = Vector3(floorf(spawn_w.x / TileGen.TILE), 0.0, floorf(spawn_w.z / TileGen.TILE)) * TileGen.TILE
 	spawn_fwd.y = 0.0
 	if spawn_fwd.length_squared() < 1e-4:
@@ -78,11 +78,20 @@ func _respawn() -> void:
 		fwd.y = 0.0
 		if fwd.length_squared() < 1e-4:
 			fwd = Vector3.FORWARD
-		xf = Transform3D(Basis.looking_at(fwd.normalized(), Vector3.UP), Origin.to_local(np["pos"]) + Vector3(0.0, 0.45, 0.0))
+		var lane_w: Vector3 = (np["pos"] as Vector3) + _lane_shift(int(np["edge"]), fwd)
+		xf = Transform3D(Basis.looking_at(fwd.normalized(), Vector3.UP), Origin.to_local(lane_w) + Vector3(0.0, 0.45, 0.0))
 	car.teleport(xf)
 	rig.snap()
 	if _autodrive != null:
 		_autodrive.sync_to_world(Origin.to_world(car.position))
+
+
+## Offset from the road centreline into the right-hand lane (clears the highway median).
+func _lane_shift(edge: int, fwd: Vector3) -> Vector3:
+	var flat := Vector3(fwd.x, 0.0, fwd.z)
+	if flat.length_squared() < 1e-4:
+		return Vector3.ZERO
+	return flat.normalized().cross(Vector3.UP) * RoadGraph.lane_offset(edge)
 
 
 func _physics_process(_dt: float) -> void:

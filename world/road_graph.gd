@@ -140,6 +140,12 @@ static func tangent(edge: int, i: int) -> Vector3:
 	return (pts[mini(i + 1, pts.size() - 1)] - pts[maxi(i - 1, 0)]).normalized()
 
 
+## Lateral offset (m, + = right of travel) to the middle of a driving lane. Highways have a
+## median barrier on the centreline, so cars must never be placed on it.
+static func lane_offset(edge: int) -> float:
+	return WIDTH[HIGHWAY] * 0.25 if e_type[edge] == HIGHWAY else 0.0
+
+
 static func edge_length(edge: int) -> float:
 	return e_step[edge] * (e_pts[edge].size() - 1)
 
