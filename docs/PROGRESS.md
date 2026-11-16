@@ -4,7 +4,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 
 ## Milestone A — streaming world, solid P1, 50–150 km, city + hill pass
 - [x] T01 Project skeleton + gate 1 — input map registered in code (autoload/settings.gd), *.uid git-ignored
-- [ ] T02 Test track + static sky
+- [x] T02 Test track + static sky — oval dev track; road.gdshader and day_night.gd (static 17:00) started early
 - [ ] T03 P1 physics core
 - [ ] T04 Camera + playable loop
 - [ ] T05 Active aero
