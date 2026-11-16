@@ -4,6 +4,7 @@ extends Node3D
 @onready var car: Car = $P1
 var rig: CameraRig
 var debug: Label
+var pause_menu: PauseMenu
 var spawn: Transform3D
 var _frames: int = 0
 var _shot_at: int = 0
@@ -21,13 +22,22 @@ func _ready() -> void:
 	debug = Label.new()
 	debug.position = Vector2(16.0, 12.0)
 	ui.add_child(debug)
+	pause_menu = (preload("res://ui/pause_menu.tscn") as PackedScene).instantiate() as PauseMenu
+	pause_menu.respawn_requested.connect(_respawn)
+	pause_menu.quit_requested.connect(quit_game)
+	ui.add_child(pause_menu)
 	_shot_at = int(Settings.arg_value("--shot", "0"))
+	Settings.apply_all(self)
+
+
+func _respawn() -> void:
+	car.teleport(spawn)
+	rig.snap()
 
 
 func _physics_process(_dt: float) -> void:
 	if Input.is_action_just_pressed("respawn"):
-		car.teleport(spawn)
-		rig.snap()
+		_respawn()
 
 
 func _process(_dt: float) -> void:

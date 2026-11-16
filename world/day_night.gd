@@ -45,3 +45,10 @@ func _ready() -> void:
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 	sun.directional_shadow_max_distance = 70.0
 	add_child(sun)
+	Settings.settings_changed.connect(_on_settings_changed)
+	Settings.apply_graphics_to_world(env, sun)
+	_on_settings_changed()
+
+
+func _on_settings_changed() -> void:
+	sun.shadow_enabled = Settings.shadow_quality > 0 and night_factor < 0.85

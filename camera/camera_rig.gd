@@ -18,10 +18,16 @@ func _ready() -> void:
 	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	_noise.frequency = 1.0
 	cam = Camera3D.new()
-	cam.far = 4000.0
+	cam.far = Settings.draw_distance
 	add_child(cam)
 	cam.make_current()
+	Settings.settings_changed.connect(_apply_settings)
 	snap()
+
+
+func _apply_settings() -> void:
+	if cam != null:
+		cam.far = Settings.draw_distance
 
 
 ## Jump straight behind the car (spawn, respawn, origin shift).
@@ -48,7 +54,7 @@ func _process(dt: float) -> void:
 	_blend = move_toward(_blend, 1.0 if hood else 0.0, dt * 4.0)
 	var b: float = smoothstep(0.0, 1.0, _blend)
 	var out: Transform3D = chase.interpolate_with(xf * Transform3D(Basis.IDENTITY, car.hood_cam), b)
-	cam.fov = lerpf(lerpf(65.0, 88.0, s), lerpf(70.0, 82.0, s), b)
+	cam.fov = lerpf(lerpf(65.0, 88.0, s), lerpf(70.0, 82.0, s), b) + Settings.fov_offset
 	cam.near = 0.05 if b > 0.5 else 0.15
 	global_transform = out
 	# speed shake

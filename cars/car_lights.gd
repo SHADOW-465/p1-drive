@@ -59,8 +59,10 @@ func _ready() -> void:
 
 func _physics_process(dt: float) -> void:
 	var night: float = DayNight.night_factor
-	if auto_headlights:
+	if Settings.auto_headlights and auto_headlights:
 		headlights = night > 0.5
+	elif not Settings.auto_headlights:
+		headlights = false
 	brake_energy = BRAKE_ENERGY if car.brake_now > 0.05 else TAIL_ENERGY * (1.0 if headlights else 0.25)
 	_tail.emission_energy_multiplier = brake_energy
 	_rev.emission_energy_multiplier = 3.0 if car.reversing else 0.0

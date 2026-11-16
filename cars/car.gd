@@ -54,7 +54,7 @@ func _physics_process(dt: float) -> void:
 	if player_controlled:
 		in_throttle = Input.get_action_strength("throttle")
 		in_brake = Input.get_action_strength("brake")
-		in_steer = Input.get_axis("steer_left", "steer_right")
+		in_steer = clampf(Input.get_axis("steer_left", "steer_right") * Settings.steer_sensitivity, -1.0, 1.0)
 		in_handbrake = Input.is_action_pressed("handbrake")
 		in_drs = Input.is_action_pressed("drs")
 	speed = linear_velocity.dot(-global_basis.z)
