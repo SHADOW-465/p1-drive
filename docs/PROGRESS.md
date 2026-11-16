@@ -66,3 +66,6 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 | Worker time per FULL tile | ≤ 250 ms | | T13 |
 | Network length | ≥ 100 km | | T25 |
 | Min FPS, 5 min autodrive, target HW | ≥ 57 | | T26 |
+
+## Low/Medium baseline (other/lowmed)
+- [x] L1 Medium sky + basic rain — gradient day/night sky, sun + moon, time_skip (T) & pause time picker, night_factor headlights/streetlights, camera-following rain particles (Low 300 / Med 600 / High 1000) & wet-road shader darkening/roughness (Fable's T21/T32/T33 upgrade these for High)

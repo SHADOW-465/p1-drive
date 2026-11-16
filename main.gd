@@ -3,6 +3,7 @@ extends Node3D
 
 @onready var car: Car = $P1
 @onready var world: TileStreamer = $World
+@onready var sky: DayNight = $Sky
 var rig: CameraRig
 var debug: Label
 var pause_menu: PauseMenu
@@ -48,6 +49,7 @@ func _ready() -> void:
 	pause_menu = (preload("res://ui/pause_menu.tscn") as PackedScene).instantiate() as PauseMenu
 	pause_menu.respawn_requested.connect(_respawn)
 	pause_menu.quit_requested.connect(quit_game)
+	pause_menu.time_set_requested.connect(sky.set_time)
 	ui.add_child(pause_menu)
 
 	_fade = ColorRect.new()
