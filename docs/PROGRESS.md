@@ -9,7 +9,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] T04 Camera + playable loop — chase/hood rig in _process on interpolated car xf (physics interpolation on); Mobile renderer, MSAA 2x; --shot=N dev arg; 60 FPS windowed
 - [x] T05 Active aero — aero follows animated pose; flat POSE table (const Array[PackedFloat32Array] literals read back as zeros in 4.7.2)
 - [x] T06 Smoke test + gate 2 — top 334 / DRS 346 km/h, 300-0 5.40 s; gate ignores intermittent Jolt job-pool engine warning
-- [ ] T07 P1 procedural mesh
+- [x] T07 P1 procedural mesh — one-draw shell (loft + cut arches + canopy + patch details, car_paint.gdshader), wing/struts/flaps, lathe wheels; tests/car_view.tscn dev viewer
 - [ ] T08 Lights, disc glow, trails
 - [ ] T09 Engine audio
 - [ ] T10 Handling polish

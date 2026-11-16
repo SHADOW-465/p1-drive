@@ -29,6 +29,7 @@ var _release_t: float = 0.0
 var _wing_y: float = 0.0
 @onready var car: Car = get_parent() as Car
 @onready var wing_pivot: Node3D = $WingPivot
+@onready var struts: Node3D = get_node_or_null("Struts") as Node3D  # rise with the wing, do not tilt
 @onready var flaps: Array[Node3D] = [$FlapL as Node3D, $FlapR as Node3D]
 
 
@@ -69,6 +70,8 @@ func _physics_process(dt: float) -> void:
 	car.k_drag = k_drag
 	car.k_down = k_down
 	wing_pivot.position.y = _wing_y + wing_height
+	if struts != null:
+		struts.position.y = wing_pivot.position.y
 	wing_pivot.rotation.x = -deg_to_rad(wing_angle_deg)  # trailing edge up
 	for f: Node3D in flaps:
 		f.rotation.x = deg_to_rad(flap_deg)

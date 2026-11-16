@@ -1,38 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://cars/car.gd" id="1"]
 [ext_resource type="Script" path="res://cars/active_aero.gd" id="2"]
+[ext_resource type="Script" path="res://cars/p1/p1_mesh.gd" id="3"]
 
 [sub_resource type="BoxShape3D" id="shape"]
 size = Vector3(1.9, 0.62, 4.4)
-
-[sub_resource type="BoxMesh" id="body"]
-size = Vector3(1.95, 0.6, 4.59)
-
-[sub_resource type="StandardMaterial3D" id="paint"]
-albedo_color = Color(1, 0.5, 0, 1)
-metallic = 0.6
-roughness = 0.3
-
-[sub_resource type="CylinderMesh" id="wheel_f"]
-top_radius = 0.34
-bottom_radius = 0.34
-height = 0.25
-radial_segments = 16
-rings = 1
-
-[sub_resource type="CylinderMesh" id="wheel_r"]
-top_radius = 0.36
-bottom_radius = 0.36
-height = 0.32
-radial_segments = 16
-rings = 1
-
-[sub_resource type="BoxMesh" id="wing"]
-size = Vector3(1.7, 0.03, 0.35)
-
-[sub_resource type="BoxMesh" id="flap"]
-size = Vector3(0.5, 0.02, 0.24)
 
 [node name="P1" type="VehicleBody3D"]
 mass = 1450.0
@@ -45,13 +18,11 @@ angular_damp = 0.3
 script = ExtResource("1")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52, -0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52, -0.25)
 shape = SubResource("shape")
 
-[node name="Body" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52, -0.2)
-mesh = SubResource("body")
-surface_material_override/0 = SubResource("paint")
+[node name="Body" type="Node3D" parent="."]
+script = ExtResource("3")
 
 [node name="WheelFL" type="VehicleWheel3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.83, 0.42, -1.4685)
@@ -66,10 +37,6 @@ suspension_max_force = 30000.0
 damping_compression = 3.5
 damping_relaxation = 5.5
 
-[node name="Rim" type="MeshInstance3D" parent="WheelFL"]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0)
-mesh = SubResource("wheel_f")
-
 [node name="WheelFR" type="VehicleWheel3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.83, 0.42, -1.4685)
 use_as_steering = true
@@ -82,10 +49,6 @@ suspension_stiffness = 65.0
 suspension_max_force = 30000.0
 damping_compression = 3.5
 damping_relaxation = 5.5
-
-[node name="Rim" type="MeshInstance3D" parent="WheelFR"]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0)
-mesh = SubResource("wheel_f")
 
 [node name="WheelRL" type="VehicleWheel3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.44, 1.2015)
@@ -100,10 +63,6 @@ suspension_max_force = 30000.0
 damping_compression = 3.5
 damping_relaxation = 5.5
 
-[node name="Rim" type="MeshInstance3D" parent="WheelRL"]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0)
-mesh = SubResource("wheel_r")
-
 [node name="WheelRR" type="VehicleWheel3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.44, 1.2015)
 use_as_traction = true
@@ -117,29 +76,19 @@ suspension_max_force = 30000.0
 damping_compression = 3.5
 damping_relaxation = 5.5
 
-[node name="Rim" type="MeshInstance3D" parent="WheelRR"]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0)
-mesh = SubResource("wheel_r")
-
 [node name="Aero" type="Node3D" parent="."]
 script = ExtResource("2")
 
 [node name="WingPivot" type="Node3D" parent="Aero"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 1.85)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 1.84)
 
-[node name="Wing" type="MeshInstance3D" parent="Aero/WingPivot"]
-mesh = SubResource("wing")
+[node name="Struts" type="Node3D" parent="Aero"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 1.84)
 
 [node name="FlapL" type="Node3D" parent="Aero"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0.2, -2.2)
-
-[node name="Mesh" type="MeshInstance3D" parent="Aero/FlapL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.12)
-mesh = SubResource("flap")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.118, -2.3)
 
 [node name="FlapR" type="Node3D" parent="Aero"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0.2, -2.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.118, -2.3)
 
-[node name="Mesh" type="MeshInstance3D" parent="Aero/FlapR"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.12)
-mesh = SubResource("flap")
+[node name="Lights" type="Node3D" parent="."]
