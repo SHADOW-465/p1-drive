@@ -7,6 +7,7 @@ extends Node3D
 
 var car: Car
 var aero: ActiveAero
+var lights: CarLights
 var phase: int = 0
 var f: int = 0  # frames in the current phase
 var t_run: int = 0
@@ -31,6 +32,7 @@ func _ready() -> void:
 	car.position.y = 0.1
 	add_child(car)
 	aero = car.get_node_or_null("Aero") as ActiveAero
+	lights = car.get_node_or_null("Lights") as CarLights
 	if aero == null:
 		check_aero = false
 
@@ -91,6 +93,8 @@ func _physics_process(_dt: float) -> void:
 					_fail("no airbrake: %s %.1f deg" % [aero.state_name(), aero.wing_angle_deg])
 				elif kmh >= prev_kmh:
 					_fail("not slowing")
+				elif lights != null and (lights.brake_energy <= CarLights.TAIL_ENERGY or lights.heat <= 0.0):
+					_fail("brake light or disc heat missing")
 				else:
 					_next()
 		4:  # stop

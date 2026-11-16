@@ -1,5 +1,8 @@
+class_name DayNight
 extends Node
 ## Sky, sun, fog (PLAN 2.7). Static late afternoon for now; the cycle arrives in T21.
+
+static var night_factor: float = 0.0  # 0 day .. 1 night, mirrors the shader global
 
 var env: Environment
 var sky_mat: ProceduralSkyMaterial

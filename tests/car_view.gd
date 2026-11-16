@@ -30,6 +30,12 @@ func _ready() -> void:
 		aero.wing_pivot.rotation.x = -deg_to_rad(ActiveAero.POSE[pose * 5 + 1])
 		for f: Node3D in aero.flaps:
 			f.rotation.x = deg_to_rad(ActiveAero.POSE[pose * 5 + 2])
+	if Settings.has_arg("--night"):
+		DayNight.night_factor = 1.0
+		(get_child(0) as DayNight).sun.light_energy = 0.05
+		(get_child(0) as DayNight).env.background_energy_multiplier = 0.05
+		(get_child(0) as DayNight).env.ambient_light_energy = 0.08
+		car.in_brake = 1.0
 	var cam := Camera3D.new()
 	add_child(cam)
 	var b: Basis = Basis(Vector3.UP, deg_to_rad(float(Settings.arg_value("--yaw", "150")))) * Basis(Vector3.RIGHT, -deg_to_rad(float(Settings.arg_value("--pitch", "14"))))

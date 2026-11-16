@@ -10,7 +10,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] T05 Active aero — aero follows animated pose; flat POSE table (const Array[PackedFloat32Array] literals read back as zeros in 4.7.2)
 - [x] T06 Smoke test + gate 2 — top 334 / DRS 346 km/h, 300-0 5.40 s; gate ignores intermittent Jolt job-pool engine warning
 - [x] T07 P1 procedural mesh — one-draw shell (loft + cut arches + canopy + patch details, car_paint.gdshader), wing/struts/flaps, lathe wheels; tests/car_view.tscn dev viewer
-- [ ] T08 Lights, disc glow, trails
+- [x] T08 Lights, disc glow, trails — one Tail mesh (0.4 tail -> 4.0 brake), reverse lamp, shared disc heat material, headlight spot auto from DayNight.night_factor, ImmediateMesh trail
 - [ ] T09 Engine audio
 - [ ] T10 Handling polish
 - [ ] T11 Origin + terrain function
