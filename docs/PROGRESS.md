@@ -16,7 +16,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] T11 Origin + terrain function — Origin autoload; biome blobs on a 64 m lattice; TerrainFn.self_check in gate 1
 - [x] T12 One tile end to end — tile_gen/tile_node/terrain.gdshader; FULL tile 52 ms; scaled HeightMapShape3D fine under Jolt (diagonal (i+1,j)-(i,j+1)), collider vs mesh 0.000 m; smooth CPU normals instead of dFdx flat look; tests/tile_view dev scene
 - [x] T13 Streamer — rings FULL/MID/FAR, 3 worker jobs, 2 ms budgeted apply, build-then-swap; max job 143 ms; live FULL peaks at 13 during swaps (9 at rest), total <= 49
-- [ ] T14 Floating origin
+- [x] T14 Floating origin — streamer calls Origin.maybe_shift; car moves itself + resets interpolation, trail shifted; tiles not interpolated
 - [ ] T15 Streaming test + gate
 - [ ] T16 Road graph
 - [ ] T17 Road surface

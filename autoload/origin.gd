@@ -22,11 +22,14 @@ func to_local(world: Vector3) -> Vector3:
 func maybe_shift(local: Vector3) -> bool:
 	if maxf(absf(local.x), absf(local.z)) <= THRESHOLD:
 		return false
-	var d: Vector3 = Vector3(roundf(local.x / STEP) * STEP, 0.0, roundf(local.z / STEP) * STEP)
+	shift_by(Vector3(roundf(local.x / STEP) * STEP, 0.0, roundf(local.z / STEP) * STEP))
+	return true
+
+
+func shift_by(d: Vector3) -> void:
 	offset += d
 	shifts += 1
 	shifted.emit(d)
-	return true
 
 
 func reset() -> void:

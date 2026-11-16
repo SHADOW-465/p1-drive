@@ -42,6 +42,7 @@ var _n_traction: int = 0
 
 func _ready() -> void:
 	drivetrain.gear_tops = gear_tops
+	Origin.shifted.connect(_on_origin_shift)
 	for c: Node in get_children():
 		if c is VehicleWheel3D:
 			_wheels.append(c as VehicleWheel3D)
@@ -118,6 +119,13 @@ func teleport(xf: Transform3D) -> void:
 	drivetrain.gear = 1
 	reversing = false
 	_steer = 0.0
+
+
+## Floating origin (PLAN 2.1): move with the world, velocities untouched.
+func _on_origin_shift(d: Vector3) -> void:
+	global_position -= d
+	reset_physics_interpolation()
+	($Lights as CarLights).shift(d)
 
 
 func wheels_in_contact() -> int:
