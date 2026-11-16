@@ -14,7 +14,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] T09 Engine audio — bake 68 ms (5 loops, cached); players not started headless (dummy driver leaks playbacks at exit)
 - [x] T10 Handling polish — probe: full lock @100 slip 1 deg (understeers, 1.45 g), clean oval laps at 150/200/250 km/h; section 6 values kept as final; quit stops audio first
 - [x] T11 Origin + terrain function — Origin autoload; biome blobs on a 64 m lattice; TerrainFn.self_check in gate 1
-- [ ] T12 One tile end to end
+- [x] T12 One tile end to end — tile_gen/tile_node/terrain.gdshader; FULL tile 52 ms; scaled HeightMapShape3D fine under Jolt (diagonal (i+1,j)-(i,j+1)), collider vs mesh 0.000 m; smooth CPU normals instead of dFdx flat look; tests/tile_view dev scene
 - [ ] T13 Streamer
 - [ ] T14 Floating origin
 - [ ] T15 Streaming test + gate
