@@ -30,7 +30,7 @@ func _physics_process(_dt: float) -> void:
 
 
 func _process(_dt: float) -> void:
-	debug.text = "%d km/h  G%s  %d rpm" % [car.speed_kmh, car.drivetrain.gear_label(), car.drivetrain.rpm]
+	debug.text = "%d km/h  G%s  %d rpm  %s" % [car.speed_kmh, car.drivetrain.gear_label(), car.drivetrain.rpm, (car.get_node("Aero") as ActiveAero).state_name()]
 	_frames += 1
 	if _shot_at > 0 and _frames == _shot_at:  # dev: --shot=<frame> saves logs/shot.png and quits
 		get_viewport().get_texture().get_image().save_png("res://logs/shot.png")

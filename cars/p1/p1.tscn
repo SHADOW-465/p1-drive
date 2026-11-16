@@ -1,6 +1,7 @@
 [gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://cars/car.gd" id="1"]
+[ext_resource type="Script" path="res://cars/active_aero.gd" id="2"]
 
 [sub_resource type="BoxShape3D" id="shape"]
 size = Vector3(1.9, 0.62, 4.4)
@@ -26,6 +27,12 @@ bottom_radius = 0.36
 height = 0.32
 radial_segments = 16
 rings = 1
+
+[sub_resource type="BoxMesh" id="wing"]
+size = Vector3(1.7, 0.03, 0.35)
+
+[sub_resource type="BoxMesh" id="flap"]
+size = Vector3(0.5, 0.02, 0.24)
 
 [node name="P1" type="VehicleBody3D"]
 mass = 1450.0
@@ -113,3 +120,26 @@ damping_relaxation = 5.5
 [node name="Rim" type="MeshInstance3D" parent="WheelRR"]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("wheel_r")
+
+[node name="Aero" type="Node3D" parent="."]
+script = ExtResource("2")
+
+[node name="WingPivot" type="Node3D" parent="Aero"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 1.85)
+
+[node name="Wing" type="MeshInstance3D" parent="Aero/WingPivot"]
+mesh = SubResource("wing")
+
+[node name="FlapL" type="Node3D" parent="Aero"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0.2, -2.2)
+
+[node name="Mesh" type="MeshInstance3D" parent="Aero/FlapL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.12)
+mesh = SubResource("flap")
+
+[node name="FlapR" type="Node3D" parent="Aero"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0.2, -2.2)
+
+[node name="Mesh" type="MeshInstance3D" parent="Aero/FlapR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.12)
+mesh = SubResource("flap")

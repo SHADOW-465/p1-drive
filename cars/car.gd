@@ -32,6 +32,7 @@ var speed_kmh: float = 0.0
 var reversing: bool = false
 var k_drag: float = 0.6  # set by active aero
 var k_down: float = 0.6
+var brake_now: float = 0.0  # effective brake pedal (after the reverse swap)
 
 var _steer: float = 0.0
 var _tc: float = 1.0
@@ -66,6 +67,7 @@ func _physics_process(dt: float) -> void:
 		reversing = true
 	var throttle: float = in_brake if reversing else in_throttle
 	var brake: float = in_throttle if reversing else in_brake
+	brake_now = brake
 	drivetrain.update(dt, speed_kmh, throttle, reversing)
 
 	var rate: float = 9.0 if absf(in_steer) < absf(_steer) else 6.0
