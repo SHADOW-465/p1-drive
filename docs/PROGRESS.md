@@ -29,7 +29,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] [OTHER] T17c Drift: handbrake + power-over drift that is controllable (rear grip falloff with slip angle, countersteer assist slider in settings, drift mode toggle key e.g. G with looser rear tyres), tyre smoke particles, skid marks decals/ribbons, tyre squeal audio tied to slip. Keep normal grip driving unchanged when drift mode is off. — G drift toggle, handbrake/power-over rear grip falloff, countersteer assist, smoke particles, skid ribbons, procedural tyre squeal audio
 - [x] [OTHER] T18 Road props — guardrails + collision strips (highway/country/mountain), streetlights + night glow quads, shaders/props.gdshader + props_glow.gdshader, one Props mesh per FULL tile
 - [x] [OTHER] T19 Streamed world becomes the game — main.tscn uses World + DayNight, spawns on RoadGraph, nearest_point respawn, boot fade until is_ready(), cars/autodrive.gd --autodrive, streaming_test covers dev loop
-- [ ] [OTHER] T20 Scatter
+- [x] [OTHER] T20 Scatter — world/scatter.gd 256 m MultiMesh chunks (conifer, broadleaf, rock), road bench/slope/city/sea rejection, live density/range settings
 - [ ] [FABLE] T21 Day/night
 - [ ] [FABLE] T22 Hero mechanism + hill pass
 - [ ] [FABLE] T23 City roads + flyover

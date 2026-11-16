@@ -36,7 +36,18 @@ var _results: Array[Array] = []  # [job id, key, data], pushed by workers
 func _ready() -> void:
 	physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	Origin.shifted.connect(_on_shift)
+	Settings.settings_changed.connect(_on_settings_changed)
 	TileGen.GRID.size()  # make sure the statics are initialised on the main thread
+	Scatter.ensure_resources()
+
+
+func _on_settings_changed() -> void:
+	for c: Node in get_children():
+		var sc: Node = c.get_node_or_null(^"Scatter")
+		if sc != null:
+			for mmi: Node in sc.get_children():
+				if mmi is MultiMeshInstance3D:
+					Scatter.apply_settings_to_mmi(mmi as MultiMeshInstance3D)
 
 
 func _exit_tree() -> void:

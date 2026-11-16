@@ -32,6 +32,10 @@ func setup(d: Dictionary) -> void:
 		_steps.append(_props_mesh)
 	if d.has("prop_faces"):
 		_steps.append(_props_collider)
+	if d.has("scatter"):
+		var chunks: Array = d["scatter"]
+		for i: int in range(0, chunks.size(), 4):
+			_steps.append(_scatter_batch.bind(i, mini(i + 4, chunks.size())))
 
 
 ## Runs one apply step; false when the tile is complete.
@@ -125,6 +129,36 @@ func _props_collider() -> void:
 	cs.name = "PropsShape"
 	cs.shape = shape
 	body().add_child(cs)
+
+
+func _scatter_batch(i0: int, i1: int) -> void:
+	Scatter.ensure_resources()
+	var sc_root := get_node_or_null(^"Scatter") as Node3D
+	if sc_root == null:
+		sc_root = Node3D.new()
+		sc_root.name = "Scatter"
+		add_child(sc_root)
+	var chunks: Array = data["scatter"]
+	for ci: int in range(i0, i1):
+		var ch: Dictionary = chunks[ci]
+		var bufs: Array = ch["bufs"]
+		for ti: int in 3:
+			var buf: PackedFloat32Array = bufs[ti]
+			if buf.is_empty():
+				continue
+			var mm := MultiMesh.new()
+			mm.transform_format = MultiMesh.TRANSFORM_3D
+			mm.use_colors = true
+			mm.mesh = Scatter._meshes[ti]
+			mm.instance_count = buf.size() / 16
+			mm.buffer = buf
+			var mmi := MultiMeshInstance3D.new()
+			mmi.multimesh = mm
+			mmi.position = ch["pos"]
+			mmi.custom_aabb = ch["aabb"]
+			mmi.material_override = Scatter._mat
+			Scatter.apply_settings_to_mmi(mmi)
+			sc_root.add_child(mmi)
 
 
 func _road_collider() -> void:

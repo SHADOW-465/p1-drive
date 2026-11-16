@@ -57,10 +57,10 @@ static func edge_range(e: int) -> Vector2i:
 
 
 ## Conforms the (n+2)^2 margin grid to the roads: bench under the road, smooth blend back.
-static func stamp(tx: int, tz: int, n: int, lod: int, h: PackedFloat32Array, cols: PackedColorArray) -> void:
+static func stamp(tx: int, tz: int, n: int, lod: int, h: PackedFloat32Array, cols: PackedColorArray) -> PackedFloat32Array:
 	var runs: Array = RoadGraph.runs_in_tile(tx, tz)
 	if runs.is_empty():
-		return
+		return PackedFloat32Array()
 	var m: int = n + 2
 	var cell: float = TILE / (n - 1)
 	var ox: float = tx * TILE - cell
@@ -115,6 +115,7 @@ static func stamp(tx: int, tz: int, n: int, lod: int, h: PackedFloat32Array, col
 			var c: Color = cols[q]
 			var k: float = w * 0.5 * (1.0 - c.a)
 			cols[q] = Color(lerpf(c.r, DIRT.r, k), lerpf(c.g, DIRT.g, k), lerpf(c.b, DIRT.b, k), c.a)
+	return bw
 
 
 ## Road mesh arrays into d["road"] (tile-local) and, for FULL, collider faces into d["road_faces"].

@@ -27,13 +27,17 @@ static func build(tx: int, tz: int, lod: int) -> Dictionary:
 	var n: int = GRID[lod]
 	var cols := PackedColorArray()
 	var h: PackedFloat32Array = _heights(tx, tz, n, cols)
+	var bw := PackedFloat32Array()
 	if lod != FAR:
-		RoadMesher.stamp(tx, tz, n, lod, h, cols)
+		bw = RoadMesher.stamp(tx, tz, n, lod, h, cols)
 	_terrain(d, n, lod, h, cols)
 	if lod != FAR:
 		RoadMesher.mesh(d, tx, tz, lod)
 	if lod == FULL:
 		RoadMesher.props(d, tx, tz)
+		var sc: Array = Scatter.build(tx, tz, n, h, bw)
+		if not sc.is_empty():
+			d["scatter"] = sc
 	d["ms"] = (Time.get_ticks_usec() - t0) / 1000.0
 	return d
 
