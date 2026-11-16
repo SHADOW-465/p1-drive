@@ -7,6 +7,8 @@ Private, personal-use Godot game. Calm free-roam driving, stylized low-poly, str
 - Target HW: Ryzen 3 7320U (4c/8t), Radeon 610M iGPU (512 MB shared), 8 GB RAM, 1366x768 @ 60 Hz. **Stable 60 FPS is a hard requirement.**
 - Milestone A (first target): tiled streaming working, solid P1, 50–150 km road, one city hero tile, one hill-pass hero tile = tasks T01–T26.
 
+> **Showmik, Nov 16 5:30 PM:** car detail needs much more attention; add Low/Medium/High graphics presets; add drifting; camera cycle must include an interior view; aim for high quality, realistic, GTA 5-like look on the High preset (Medium stays default). Tasks T17a–T17d in PROGRESS.md come next, before T18.
+
 > **Quality directive (Nov 16, from Showmik; overrides §1/§7 where they conflict):** balanced, clean, good-looking visuals: moderate, not overkill and not low quality. Detailed, well-shaped P1 (panels, vents, lights, moving active wing and flaps). Pleasant scenery density, lit cities, hills, rain with wet-road look, nice skies. Mobile renderer (Forward+ only if clearly needed), Low/Medium/High presets with Medium default. No SDFGI, no heavy volumetrics, moderate shadows and draw distance. CC0/CC-BY no-login assets allowed when better, credited in CREDITS.md. Zero errors required.
 
 ## 1. Decisions (final unless a task proves them wrong)
