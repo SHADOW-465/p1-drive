@@ -28,11 +28,15 @@ func setup(d: Dictionary) -> void:
 	if d.has("road"):
 		_steps.append(_road_mesh)
 	if d.has("road_faces"):
-		_steps.append(_road_collider)
+		var rf: PackedVector3Array = d["road_faces"]
+		for i: int in range(0, rf.size(), 3000):
+			_steps.append(_road_collider_chunk.bind(i, mini(i + 3000, rf.size())))
 	if d.has("props"):
 		_steps.append(_props_mesh)
 	if d.has("prop_faces"):
-		_steps.append(_props_collider)
+		var pf: PackedVector3Array = d["prop_faces"]
+		for i: int in range(0, pf.size(), 3000):
+			_steps.append(_props_collider_chunk.bind(i, mini(i + 3000, pf.size())))
 	if d.has("scatter"):
 		var chunks: Array = d["scatter"]
 		for i: int in range(0, chunks.size(), 4):
@@ -124,12 +128,13 @@ func _props_mesh() -> void:
 		mesh.surface_set_material(1, props_glow_mat)
 
 
-func _props_collider() -> void:
+func _props_collider_chunk(i0: int, i1: int) -> void:
 	var shape := ConcavePolygonShape3D.new()
 	shape.backface_collision = true
-	shape.set_faces(data["prop_faces"])
+	var pf: PackedVector3Array = data["prop_faces"]
+	shape.set_faces(pf if i0 == 0 and i1 == pf.size() else pf.slice(i0, i1))
 	var cs := CollisionShape3D.new()
-	cs.name = "PropsShape"
+	cs.name = "PropsShape_%d" % i0
 	cs.shape = shape
 	body().add_child(cs)
 
@@ -177,11 +182,12 @@ func _overlay_node() -> void:
 		add_child(inst)
 
 
-func _road_collider() -> void:
+func _road_collider_chunk(i0: int, i1: int) -> void:
 	var shape := ConcavePolygonShape3D.new()
-	shape.set_faces(data["road_faces"])
+	var rf: PackedVector3Array = data["road_faces"]
+	shape.set_faces(rf if i0 == 0 and i1 == rf.size() else rf.slice(i0, i1))
 	var cs := CollisionShape3D.new()
-	cs.name = "RoadShape"
+	cs.name = "RoadShape_%d" % i0
 	cs.shape = shape
 	body().add_child(cs)
 
