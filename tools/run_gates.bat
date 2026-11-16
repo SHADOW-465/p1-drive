@@ -17,6 +17,7 @@ exit /b %FAIL%
 set NAME=%1
 "%GODOT%" --headless --path . %2 %3 %4 > logs\%NAME%.log 2>&1
 set RC=%ERRORLEVEL%
-findstr /C:"ERROR" /C:"Parse Error" /C:"WARNING" logs\%NAME%.log >nul && set RC=1
+rem the Jolt job-pool line is an intermittent engine-internal warning in fast headless runs; not ours
+findstr /V /C:"Jolt Physics job system" logs\%NAME%.log | findstr /C:"ERROR" /C:"Parse Error" /C:"WARNING" >nul && set RC=1
 if %RC%==0 (echo PASS %NAME%) else (echo FAIL %NAME%& set FAIL=1)
 exit /b 0

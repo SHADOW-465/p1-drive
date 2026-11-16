@@ -8,7 +8,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] T03 P1 physics core — 0-100 3.07 s, 0-200 6.80 s, top 345 (LOW aero, limiter), 100-0 28.8 m, 300-0 6.07 s; engine_force sign and friction fixed, see PLAN 6
 - [x] T04 Camera + playable loop — chase/hood rig in _process on interpolated car xf (physics interpolation on); Mobile renderer, MSAA 2x; --shot=N dev arg; 60 FPS windowed
 - [x] T05 Active aero — aero follows animated pose; flat POSE table (const Array[PackedFloat32Array] literals read back as zeros in 4.7.2)
-- [ ] T06 Smoke test + gate 2
+- [x] T06 Smoke test + gate 2 — top 334 / DRS 346 km/h, 300-0 5.40 s; gate ignores intermittent Jolt job-pool engine warning
 - [ ] T07 P1 procedural mesh
 - [ ] T08 Lights, disc glow, trails
 - [ ] T09 Engine audio
