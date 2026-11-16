@@ -40,7 +40,7 @@ static func _heights(tx: int, tz: int, n: int, cols: PackedColorArray) -> Packed
 	var oz: float = tz * TILE
 	var lat: float = TerrainFn.LATTICE
 	# lattice weights around the tile, margin included (cell <= lattice step)
-	var ln: int = int(TILE / lat) + 3
+	var ln: int = int(TILE / lat) + 4
 	var lx0: int = floori(ox / lat) - 1
 	var lz0: int = floori(oz / lat) - 1
 	var lw: Array[PackedFloat32Array] = []

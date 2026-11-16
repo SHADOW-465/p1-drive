@@ -15,7 +15,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] T10 Handling polish — probe: full lock @100 slip 1 deg (understeers, 1.45 g), clean oval laps at 150/200/250 km/h; section 6 values kept as final; quit stops audio first
 - [x] T11 Origin + terrain function — Origin autoload; biome blobs on a 64 m lattice; TerrainFn.self_check in gate 1
 - [x] T12 One tile end to end — tile_gen/tile_node/terrain.gdshader; FULL tile 52 ms; scaled HeightMapShape3D fine under Jolt (diagonal (i+1,j)-(i,j+1)), collider vs mesh 0.000 m; smooth CPU normals instead of dFdx flat look; tests/tile_view dev scene
-- [ ] T13 Streamer
+- [x] T13 Streamer — rings FULL/MID/FAR, 3 worker jobs, 2 ms budgeted apply, build-then-swap; max job 143 ms; live FULL peaks at 13 during swaps (9 at rest), total <= 49
 - [ ] T14 Floating origin
 - [ ] T15 Streaming test + gate
 - [ ] T16 Road graph

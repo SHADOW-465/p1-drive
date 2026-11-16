@@ -9,6 +9,7 @@ var hms: Dictionary = {}  # Vector2i tile -> collider heights
 var centre: Vector2i
 var f: int = 0
 var _shot_at: int = 0
+var step_ms: Dictionary[int, float] = {}
 
 
 func _ready() -> void:
@@ -27,9 +28,14 @@ func _ready() -> void:
 			tile.setup(d)
 			tile.position = Origin.to_local(Vector3(tile.tx, 0.0, tile.tz) * TileGen.TILE)
 			add_child(tile)
-			while tile.step():
-				pass
-	print("tile build avg %.1f ms" % (ms / 9.0))
+			var more: bool = true
+			var k: int = 0
+			while more:
+				var t0: int = Time.get_ticks_usec()
+				more = tile.step()
+				step_ms[k] = maxf(step_ms.get(k, 0.0), (Time.get_ticks_usec() - t0) / 1000.0)
+				k += 1
+	print("tile build avg %.1f ms; max apply ms per step %s" % [ms / 9.0, step_ms])
 	car = (load("res://cars/p1/p1.tscn") as PackedScene).instantiate() as Car
 	car.position = Vector3(0.0, surface(Origin.offset.x, Origin.offset.z) + 0.6, 0.0)
 	add_child(car)
