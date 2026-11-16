@@ -5,7 +5,7 @@ Private, personal-use Godot game. Calm free-roam driving, stylized low-poly, str
 
 - Godot: `C:\Users\acer\Tools\Godot\Godot_v4.7.2-stable_win64_console.exe` (4.7.2 stable, GDScript only). Referred to as `%GODOT%`.
 - Target HW: Ryzen 3 7320U (4c/8t), Radeon 610M iGPU (512 MB shared), 8 GB RAM, 1366x768 @ 60 Hz. **Stable 60 FPS is a hard requirement.**
-- Milestone A (first target): tiled streaming working, solid P1, 50–150 km road, one city hero tile, one hill-pass hero tile = tasks T01–T25.
+- Milestone A (first target): tiled streaming working, solid P1, 50–150 km road, one city hero tile, one hill-pass hero tile = tasks T01–T26.
 
 ## 1. Decisions (final unless a task proves them wrong)
 
@@ -319,4 +319,161 @@ Real-HW check (manual, after T24 and after every later milestone): `play.bat --f
 | Respawn | `R` puts the car on the nearest road, aligned, at rest, from anywhere (including under the map) |
 | Gates | `tools/run_gates.bat` exits 0 |
 
-<!-- TASKS -->
+## 10. Tasks (ordered; one task ≈ one commit)
+
+Rules for every task: commit as `Txx: <summary>`; `tools\run_gates.bat` must exit 0 before the commit (from T01 on, with whatever gates exist by then); tick the box in `docs/PROGRESS.md` in the same commit; never push; all GDScript fully typed; never print the words `ERROR`/`WARNING` from our own code (gates grep for them); any third-party file needs a `docs/CREDITS.md` entry first.
+
+### Phase 1 — setup and car (playable at T04)
+
+**T01 Project skeleton + gate 1.** `project.godot` (gl_compatibility, 1366x768, vsync, Jolt, 60 Hz, warning levels from §8, input map from §5, buses SFX/Music, shader globals `night_factor`, `wetness`), folders from §3, `.gitignore` (`.godot/`, `logs/`), `autoload/fps_log.gd`, empty `main.tscn`, `tools/check_scripts.gd`, `tools/run_gates.bat` (gate 1), `play.bat`.
+Done: gates exit 0; a deliberately planted `var x = 1` makes gate 1 fail (then removed); `play.bat --fps-log` opens a window and prints FPS lines.
+
+**T02 Test track + static sky.** `tests/test_track.tscn`: 3 km straight + wide oval as flat meshes on a `WorldBoundaryShape3D` ground, simple markings; `WorldEnvironment` with ProceduralSkyMaterial, warm sun (one shadowed directional, 70 m), depth fog.
+Done: scene opens from `main.tscn`; looks like a late-afternoon sky; gates pass.
+
+**T03 P1 physics core.** `cars/p1/p1.tscn` with placeholder boxes, 4 wheels, `car.gd` + `drivetrain.gd` using §6.1–6.2 (constant LOW aero for now). Confirm the API semantics noted in §6 by measurement and fix the notes in this file if wrong.
+Done: with a temporary bench script: 0–100, 0–200, top speed, 100–0 within §6.2 targets; no bounce at rest; numbers pasted into the commit message.
+
+**T04 Camera + playable loop.** `camera/camera_rig.gd` (chase with speed FOV + shake, hood cam, toggle), `main.gd` wiring player input, respawn to start (`R`), debug label (speed/gear/rpm).
+Done: `play.bat` → drive the test track with keyboard and gamepad; camera toggle works; 60 FPS on target HW with `--fps-log`.
+
+**T05 Active aero.** `active_aero.gd` per §6.3 with placeholder wing/flap boxes on pivots; forces applied from animated coefficients; state shown in debug label.
+Done: wing rises at 100 km/h, flattens on DRS, airbrakes on hard braking and settles slowly; top speed higher with DRS than without.
+
+**T06 Smoke test + gate 2.** `tests/smoke_test.tscn/.gd` per §8.2; also prints (not asserts) the §6.2 bench numbers; added to `run_gates.bat`.
+Done: gate 2 passes; breaking the airbrake rule on purpose makes it fail (then restored).
+
+**T07 P1 procedural mesh.** `p1_mesh.gd` (`@tool`): body loft (~9 cross-sections, low nose, teardrop cabin, side intakes, open rear deck), cockpit glass, wing with endplates + struts, front flaps, wheels (16-seg tyre, rim, disc, caliper), light strips. Papaya orange paint (`#FF8000`, metallic 0.6, roughness 0.3), black lower body/diffuser. Target ≤ 6k tris, ≤ 25 draw calls.
+Done: recognisably P1-inspired from chase cam; wing/flaps animate on correct pivots without clipping; collider matches body; smoke test still passes.
+
+**T08 Lights, disc glow, trails.** `car_lights.gd` per §6.4; headlight spot stub (manual toggle until T21).
+Done: acceptance row "Lights"; smoke test asserts brake emission and disc heat.
+
+**T09 Engine audio.** `audio_bake.gd` + `engine_audio.gd` per §6.5.
+Done: acceptance row "Audio"; bake < 150 ms at startup; headless runs clean.
+
+**T10 Handling polish.** Tune §6 numbers on the test track (steering curve, grip balance, damping, traction control, camera feel). Update §6 with final values.
+Done: acceptance row "P1 handling"; smoke test passes.
+
+### Phase 2 — streaming world
+
+**T11 Origin + terrain function.** `autoload/origin.gd` (no listeners yet), `data/world_def.json` (seed, biome blobs for the 20 km world), `world/terrain_fn.gd` with a `self_check()` run by `check_scripts.gd`: deterministic, continuous across tile borders, mountain/sea ranges sane.
+Done: self-check passes in gate 1.
+
+**T12 One tile end to end (synchronous).** `tile_gen.gd` FULL terrain data (heights, colours, indices, skirts), `tile_node.gd` apply steps, `terrain.gdshader`, HeightMapShape3D collider (scaled 8×; verify under Jolt, else fallback R1). Static 3×3 block in a dev scene.
+Done: car drives over generated hills; resting height matches the visual surface within 5 cm; no cracks between the 9 tiles; build time per tile logged.
+
+**T13 Streamer.** `tile_streamer.gd`: rings, hysteresis, WorkerThreadPool jobs, epoch/stale drop, budgeted apply, MID/FAR LODs, LOD swap, frees, counters, clean shutdown.
+Done: driving in a straight line for 10 km keeps `full ≤ 9`, `total ≤ 49`; `FpsLog` shows no frame > 25 ms; worker time per FULL tile ≤ 250 ms.
+
+**T14 Floating origin.** Wire `Origin.shifted` to tiles, car, camera, trail; shift at 2048 m.
+Done: acceptance row "Floating origin"; world position continuous across shifts (logged).
+
+**T15 Streaming test + gate.** `tests/streaming_test.tscn/.gd` per §8.4 (straight-line route for now); added to `run_gates.bat`.
+Done: gate passes; disabling tile frees on purpose makes it fail (then restored).
+
+**T16 Road graph.** `autoload/road_graph.gd` (format §2.4, index, sampling, `nearest_point`), hand-written dev network `data/roads/network.json` (~8 km loop over ≥ 6 tiles, all four road types, one junction) with `self_check()`.
+Done: self-check passes (sample continuity, index completeness, `total_km`).
+
+**T17 Road surface.** `road_mesher.gd`: sampling, four cross-sections, banking, verge skirts, `road.gdshader` markings, road collider, terrain conform stamping (FULL + widened MID), junction pads.
+Done: acceptance rows "Roads" and "Terrain" on the dev loop at 300 km/h, including tile borders.
+
+**T18 Road props.** Guardrails (with collision strips), streetlight poles + emissive heads + glow quads, kerbs/sidewalks, MID ribbons; `props.gdshader` using `night_factor`.
+Done: rails stop the car; one props mesh per tile; draw calls within §7.
+
+**T19 Streamed world becomes the game.** `main.tscn` uses World instead of the test track; spawn on graph; `respawn` via `nearest_point`; boot fade until `is_ready()`; `--autodrive` (follow the road graph, speed limited by curvature); streaming test now follows the dev loop.
+Done: acceptance row "Respawn"; `play.bat --fps-log --autodrive` laps the dev loop unattended.
+
+**T20 Scatter.** `scatter.gd` per §2.6 with tree A/B and rock meshes (procedural, vertex-coloured).
+Done: acceptance row "Scatter"; triangles and draw calls within §7 in the densest hills.
+
+**T21 Day/night.** `day_night.gd` per §2.7; `time_skip`; auto headlights; streetlight/trail night behaviour.
+Done: acceptance row "Day/night"; 60 FPS at night with headlight spot.
+
+### Phase 3 — hero tiles
+
+**T22 Hero mechanism + hill pass.** `hero_tiles` overrides in tile gen, threaded overlay loading; `data/hero/pass.json` (≥ 6 hairpins, ~3 km, 250 m climb), summit lay-by overlay.
+Done: acceptance row "Hero tiles" (pass part); streaming test still passes through the pass tile.
+
+**T23 City roads + flyover.** `data/hero/city.json`: 5×5 block grid, elevated highway edge crossing the tile; elevated cross-section (deck, barriers, pillars, no terrain conform); city tile `flatten_to`.
+Done: every street and the flyover drivable; ramps join the dev highway.
+
+**T24 City overlay.** `tools/build_city.gd` → `world/hero/city_downtown.tscn` (tower MultiMesh, `building.gdshader` lit windows, box colliders, a few low blocks/parks for variety).
+Done: acceptance row "Hero tiles" (city part); city tile ≤ 40 draw calls, 60 FPS on target HW.
+
+### Phase 4 — the network (milestone A lands here)
+
+**T25 Network generator.** `tools/gen_network.gd` + routes/towns in `world_def.json` per §6.6; validation (grade, radius, connectivity, self-intersections become junction nodes); writes `network.json`; prints km per type.
+Done: acceptance row "Road graph" (≥ 100 km, target ~148 km); hero edges intact.
+
+**T26 Milestone A hardening.** Streaming test follows the highway ring (≥ 24 tiles, ≥ 2 origin shifts); `--autodrive` 5-minute run on target HW; fix every budget overrun (§7); update §6/§7 with measured numbers.
+Done: all gates pass; real-HW check from §7 met; **Milestone A complete**.
+
+**T27 Procedural towns.** `town_gen.gd` at `town` nodes.
+Done: 3+ towns visible on the network; no building on a road bench; budgets hold.
+
+### Phase 5 — HUD, menus, radio
+
+**T28 HUD.** `ui/hud.tscn` (speed, gear, rpm bar with redline, aero state, radio track, FPS via `fps_toggle`); remove debug label.
+Done: acceptance row "HUD"; HUD costs ≤ 5 draw calls.
+
+**T29 Settings + pause menu.** `autoload/settings.gd`, `ui/pause_menu.tscn` (resume, Low/Med preset applied live, volumes, time-of-day pick, quit); keyboard, mouse and gamepad navigation.
+Done: acceptance row "Pause/settings"; verify 3D scale works in Compatibility, else pin to 1.0.
+
+**T30 Radio.** `autoload/radio.gd`: music dir from settings (default `%USERPROFILE%\Music\P1Drive`), scan `.mp3/.ogg`, load bytes on a worker then `load_from_file`/`data`, auto-advance, keys, HUD text.
+Done: acceptance row "Radio"; gates pass with a missing folder.
+
+**T31 Minimap (optional).** `ui/minimap.gd`.
+Done: shows nearby roads + car heading; ≤ 0.3 ms per redraw. Skip if time is short.
+
+### Phase 6 — weather (milestone B)
+
+**T32 Weather core.** `weather.gd` states + blends: fog, sky darkening, `wetness` in `road.gdshader`; pause-menu pick + random mode.
+Done: switching states is smooth; wet sheen visible; budgets hold.
+
+**T33 Rain FX + mist.** Camera-following rain particles, `droplets.gdshader` screen effect, hill mist.
+Done: acceptance row "Weather"; 60 FPS on Low in rain at night in the city.
+
+### Phase 7 — coast, viewpoints, more km (milestone C)
+
+**T34 Sea + coast biome.** `sea.gdshader` on a camera-following plane; beach/cliff colouring; coast noise.
+Done: shoreline looks clean from the road; sea costs 1 draw call.
+
+**T35 Coast hero tile.** `data/hero/coast.json` cliff road + overlay (rock stacks, lighthouse silhouette).
+Done: drivable both ways; rails on the sea side; streaming test passes through it.
+
+**T36 Viewpoints.** Lay-by generator for marked graph points (parking pad, sign, bench); 4+ viewpoints incl. pass and coast.
+Done: each reachable and drivable; shown on minimap if T31 exists.
+
+**T37 Expand the network.** World 32×32 km; routes to ~300 km, then ~500 km; re-run T26 checks.
+Done: `gen_network.gd` reports ≥ 450 km; all gates and the real-HW check pass; boot time ≤ 5 s.
+
+### Phase 8–9 — low priority
+
+**T38 Companion stub.** `companion_toggle` shows/hides a simple seated figure node; setting persisted.
+Done: toggles without affecting physics.
+
+**T39 Car 2 (Gemera-inspired).** New scene reusing `car.gd` with its own exports (4 seats, AWD, heavier, softer), own mesh builder, simpler aero (no airbrake).
+Done: passes a variant of the smoke test minus aero asserts.
+
+**T40 Car select.** Pause-menu car switch (respawn in place).
+Done: switch works mid-session; setting persisted.
+
+**T41 Final polish.** Tuning pass, README-level notes in this file, CREDITS.md final.
+Done: all gates pass; real-HW check passes in every weather on Low.
+
+## 11. Risks and fallbacks
+
+| # | Risk | Checked in | Fallback |
+|---|---|---|---|
+| R1 | HeightMapShape3D with 8× XZ node scale misbehaves under Jolt | T12 | Terrain trimesh in 16 strips, one strip per frame; or GodotPhysics3D |
+| R2 | GDScript tile generation too slow (> 250 ms/tile) | T13 | Fewer octaves; 97×97 grid; stamp roads at half resolution |
+| R3 | `engine_force`/`brake` semantics differ from §6 notes | T03 | Re-derive from measurements; targets in §6.2 are the contract, not the raw numbers |
+| R4 | 610M fill rate / shader cost misses 60 FPS | T04, T26 | Low preset: 0.85 scale, no MSAA/glow, shorter shadows, then shadows off |
+| R5 | `visibility_range` or 3D scaling unsupported in Compatibility | T20, T29 | Manual per-chunk distance toggle at 4 Hz; fixed scale 1.0 |
+| R6 | Main-thread Mesh/Shape creation spikes > 2 ms | T13, T17 | Split steps smaller (road collider per 256 m, scatter per chunk) |
+| R7 | Junction pads look bad | T17, T23 | Proper intersection meshes for city grid only |
+| R8 | Headless tests cannot see GPU cost | T26 | Manual `--fps-log --autodrive` run is part of each milestone's done-criteria |
+| R9 | Procedural car looks too crude | T07 | More cross-sections first; a verified CC0 model only as a last resort (must allow separate wing) |
+
+Milestones: **A** = T01–T26, **B** = T27–T33, **C** = T34–T37, extras = T38–T41.
