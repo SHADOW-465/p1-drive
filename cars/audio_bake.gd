@@ -59,3 +59,26 @@ static func noise(key: String, secs: float, lowpass: float, sine_hz: float, loop
 				out[i] = raw[i] * exp(-6.0 * i / cnt) * minf(i / 200.0, 1.0)
 		_cache[key] = _wav(out, loop)
 	return _cache[key]
+
+
+## Seamless 1 s tyre squeal loop: twin resonant scrub partials + band-limited hiss.
+static func squeal(key: String = "tyre_squeal") -> AudioStreamWAV:
+	if not _cache.has(key):
+		var rng := RandomNumberGenerator.new()
+		rng.seed = hash(key)
+		var out := PackedFloat32Array()
+		out.resize(RATE)
+		var lp: float = 0.0
+		var hp: float = 0.0
+		var prev_in: float = 0.0
+		for i: int in RATE:
+			var ph: float = TAU * i / RATE
+			var w_mod: float = 0.85 + 0.15 * sin(ph * 6.0)
+			var tone: float = (0.55 * sin(ph * 790.0) + 0.35 * sin(ph * 1185.0 + 0.7) + 0.2 * sin(ph * 1580.0)) * w_mod
+			var n: float = rng.randf_range(-1.0, 1.0)
+			lp += (n - lp) * 0.35
+			hp = 0.85 * (hp + lp - prev_in)
+			prev_in = lp
+			out[i] = tanh((tone * 0.45 + hp * 0.55) * 1.4) * 0.7
+		_cache[key] = _wav(out, true)
+	return _cache[key]

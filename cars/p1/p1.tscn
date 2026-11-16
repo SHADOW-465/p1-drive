@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://cars/car.gd" id="1"]
 [ext_resource type="Script" path="res://cars/active_aero.gd" id="2"]
 [ext_resource type="Script" path="res://cars/p1/p1_mesh.gd" id="3"]
 [ext_resource type="Script" path="res://cars/car_lights.gd" id="4"]
 [ext_resource type="Script" path="res://cars/engine_audio.gd" id="5"]
+[ext_resource type="Script" path="res://cars/car_drift.gd" id="6"]
 
 [sub_resource type="BoxShape3D" id="shape"]
 size = Vector3(1.9, 0.62, 4.4)
@@ -98,3 +99,6 @@ script = ExtResource("4")
 
 [node name="Audio" type="Node" parent="."]
 script = ExtResource("5")
+
+[node name="Drift" type="Node3D" parent="."]
+script = ExtResource("6")
