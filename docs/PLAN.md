@@ -201,7 +201,7 @@ P1 (VehicleBody3D, car.gd; faces −Z; continuous_cd on)
 
 ## 6. Tuning numbers (starting values; T03/T05 tune against the measurable targets)
 
-Engine API semantics (from engine source; **T03 must confirm by measurement**): `engine_force` is Newtons **per traction wheel**; `brake` is a max impulse **per wheel per physics tick** → always compute `brake = force_N / Engine.physics_ticks_per_second`; a wheel with non-zero engine force ignores its brake; suspension force = `mass × (stiffness × compression − damping × velocity)`.
+Engine API semantics (from engine source; **T03 must confirm by measurement**): `engine_force` is Newtons **per traction wheel**; `brake` is a max impulse **per wheel per physics tick** → always compute `brake = force_N / Engine.physics_ticks_per_second`; a wheel with non-zero engine force ignores its brake; suspension force = `mass × (stiffness × compression − damping × velocity)`. **Measured in T03:** positive `engine_force` drives toward **+Z**, so the −Z-facing car applies it negated; positive `steering` turns left; side forces act at body-origin height (roll influence is ineffective with the origin at ground level), so lateral grip must stay well below the 2.67 g rollover threshold; the project default `linear_damp` 0.1 must be replaced with 0 on the car (it capped top speed at 200 km/h); Jolt's `WorldBoundaryShape3D` is finite (`world_boundary_shape_size` raised to 40 km).
 
 ### 6.1 Chassis and wheels
 | Param | Value | Param | Value |
@@ -211,7 +211,7 @@ Engine API semantics (from engine source; **T03 must confirm by measurement**): 
 | wheel radius F/R | 0.34 / 0.36 m | wheel_rest_length | 0.12 m |
 | suspension_stiffness | 65 (static sag ≈ 3.8 cm, ≈ 7.5 cm at max downforce) | suspension_travel | 0.10 m |
 | damping_compression / relaxation | 3.5 / 5.5 | suspension_max_force | 30000 N |
-| wheel_friction_slip F/R | 2.4 / 2.8 (rear grippier = stable) | wheel_roll_influence | 0.03 |
+| wheel_friction_slip F/R | 1.35 / 1.6 (rear grippier = stable; 2.4/2.8 rolled the car) | wheel_roll_influence | 0.03 |
 | angular_damp | 0.3 | traction | RWD (rear `use_as_traction`) |
 
 ### 6.2 Drivetrain
