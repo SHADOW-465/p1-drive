@@ -16,6 +16,7 @@ buses/default_bus_layout="res://default_bus_layout.tres"
 Settings="*res://autoload/settings.gd"
 FpsLog="*res://autoload/fps_log.gd"
 Origin="*res://autoload/origin.gd"
+Radio="*res://autoload/radio.gd"
 
 [debug]
 

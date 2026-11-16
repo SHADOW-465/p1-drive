@@ -41,7 +41,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [ ] [OTHER] T27 Procedural towns
 - [x] [OTHER] T28 HUD — ui/hud.tscn + ui/hud.gd (speed, gear, RPM bar with redline + boost, aero/drift state, time, radio text, F3 FPS toggle; <= 5 draw calls; removed debug label)
 - [ ] [OTHER] T29 Settings + pause menu
-- [ ] [OTHER] T30 Radio
+- [x] [OTHER] T30 Radio — autoload/radio.gd scans Settings.music_dir (.mp3/.ogg), worker-thread byte read + load_from_buffer, auto-advance, N/B/M keys, HUD track display, graceful "No music" on missing folder
 - [ ] [OTHER] T31 Minimap (optional)
 - [ ] [FABLE] T32 Weather core
 - [ ] [FABLE] T33 Rain FX + mist

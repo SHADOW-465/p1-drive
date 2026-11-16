@@ -19,6 +19,8 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	_build_ui()
 	_fps_lbl.visible = Settings.fps_visible
+	set_radio_text(Radio.status_text())
+	Radio.track_changed.connect(set_radio_text)
 	Settings.settings_changed.connect(func() -> void:
 		if _fps_lbl != null:
 			_fps_lbl.visible = Settings.fps_visible
