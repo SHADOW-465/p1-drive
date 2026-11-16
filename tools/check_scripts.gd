@@ -35,7 +35,7 @@ func _scan(dir: String) -> int:
 ## Each entry: script path with a static self_check() -> String ("" = ok).
 func _self_checks() -> int:
 	var bad: int = 0
-	for path: String in []:
+	for path: String in ["res://world/terrain_fn.gd"]:
 		var msg: String = (load(path) as GDScript).call("self_check")
 		if msg != "":
 			print("CHECK FAIL %s: %s" % [path, msg])

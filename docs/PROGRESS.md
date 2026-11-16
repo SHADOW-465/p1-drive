@@ -13,7 +13,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] T08 Lights, disc glow, trails — one Tail mesh (0.4 tail -> 4.0 brake), reverse lamp, shared disc heat material, headlight spot auto from DayNight.night_factor, ImmediateMesh trail
 - [x] T09 Engine audio — bake 68 ms (5 loops, cached); players not started headless (dummy driver leaks playbacks at exit)
 - [x] T10 Handling polish — probe: full lock @100 slip 1 deg (understeers, 1.45 g), clean oval laps at 150/200/250 km/h; section 6 values kept as final; quit stops audio first
-- [ ] T11 Origin + terrain function
+- [x] T11 Origin + terrain function — Origin autoload; biome blobs on a 64 m lattice; TerrainFn.self_check in gate 1
 - [ ] T12 One tile end to end
 - [ ] T13 Streamer
 - [ ] T14 Floating origin
