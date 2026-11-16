@@ -69,3 +69,4 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 
 ## Low/Medium baseline (other/lowmed)
 - [x] L1 Medium sky + basic rain — gradient day/night sky, sun + moon, time_skip (T) & pause time picker, night_factor headlights/streetlights, camera-following rain particles (Low 300 / Med 600 / High 1000) & wet-road shader darkening/roughness (Fable's T21/T32/T33 upgrade these for High)
+- [x] L2 Basic hill pass + city blockout — data/hero/pass.json (6-hairpin pass) + hill_pass.tscn viewpoint, data/hero/city.json (4x4 block downtown grid) + city_downtown.tscn (1 MultiMesh + colliders) + shaders/building.gdshader (lit windows at night), hero_tiles overlay pre-warming in TileStreamer (Fable's T22/T24 upgrade these for High)

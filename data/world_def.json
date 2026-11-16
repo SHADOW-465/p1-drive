@@ -14,5 +14,9 @@
 		{"name": "dev_city", "type": "city", "wp": [[4200, 4400], [3400, 4900], [2500, 5100], [1600, 4800]]},
 		{"name": "dev_mountain", "type": "mountain", "wp": [[1600, 4800], [1000, 4300], [700, 3600], [1000, 3000]]},
 		{"name": "dev_spur", "type": "country", "wp": [[3600, 2400], [4300, 1900], [5200, 1500]]}
-	]
+	],
+	"hero_tiles": {
+		"5,5": {"no_scatter": true, "overlay": "res://world/hero/city_downtown.tscn"},
+		"-2,-6": {"overlay": "res://world/hero/hill_pass.tscn"}
+	}
 }

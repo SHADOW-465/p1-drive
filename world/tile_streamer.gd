@@ -39,6 +39,13 @@ func _ready() -> void:
 	Settings.settings_changed.connect(_on_settings_changed)
 	TileGen.GRID.size()  # make sure the statics are initialised on the main thread
 	Scatter.ensure_resources()
+	var hero_cfg: Dictionary = TerrainFn.def.get("hero_tiles", {})
+	for k: String in hero_cfg:
+		var ov: String = str((hero_cfg[k] as Dictionary).get("overlay", ""))
+		if ov != "" and not TileNode.overlay_cache.has(ov):
+			var ps := ResourceLoader.load(ov) as PackedScene
+			if ps != null:
+				TileNode.overlay_cache[ov] = ps
 
 
 func _on_settings_changed() -> void:
@@ -54,6 +61,7 @@ func _exit_tree() -> void:
 	for task: int in _jobs.values():
 		WorkerThreadPool.wait_for_task_completion(task)
 	_jobs.clear()
+	TileNode.overlay_cache.clear()
 
 
 ## True when the 3x3 FULL block around the centre is live.

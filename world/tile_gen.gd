@@ -38,6 +38,9 @@ static func build(tx: int, tz: int, lod: int) -> Dictionary:
 		var sc: Array = Scatter.build(tx, tz, n, h, bw)
 		if not sc.is_empty():
 			d["scatter"] = sc
+		var hero: Dictionary = (TerrainFn.def.get("hero_tiles", {}) as Dictionary).get("%d,%d" % [tx, tz], {})
+		if hero.has("overlay"):
+			d["overlay"] = hero["overlay"]
 	d["ms"] = (Time.get_ticks_usec() - t0) / 1000.0
 	return d
 

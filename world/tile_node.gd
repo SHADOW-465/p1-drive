@@ -6,6 +6,7 @@ static var terrain_mat: ShaderMaterial
 static var road_mat: ShaderMaterial
 static var props_mat: ShaderMaterial
 static var props_glow_mat: ShaderMaterial
+static var overlay_cache: Dictionary[String, PackedScene] = {}
 static var step_ms: Dictionary[StringName, float] = {}  # worst time per apply step (dev stat)
 
 var tx: int
@@ -36,6 +37,8 @@ func setup(d: Dictionary) -> void:
 		var chunks: Array = d["scatter"]
 		for i: int in range(0, chunks.size(), 4):
 			_steps.append(_scatter_batch.bind(i, mini(i + 4, chunks.size())))
+	if d.has("overlay"):
+		_steps.append(_overlay_node)
 
 
 ## Runs one apply step; false when the tile is complete.
@@ -159,6 +162,19 @@ func _scatter_batch(i0: int, i1: int) -> void:
 			mmi.material_override = Scatter._mat
 			Scatter.apply_settings_to_mmi(mmi)
 			sc_root.add_child(mmi)
+
+
+func _overlay_node() -> void:
+	var path: String = str(data["overlay"])
+	var ps: PackedScene = overlay_cache.get(path) as PackedScene
+	if ps == null:
+		ps = ResourceLoader.load(path) as PackedScene
+		if ps != null:
+			overlay_cache[path] = ps
+	if ps != null:
+		var inst: Node = ps.instantiate()
+		inst.name = "Overlay"
+		add_child(inst)
 
 
 func _road_collider() -> void:
