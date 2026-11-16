@@ -24,6 +24,8 @@ func _ready() -> void:
 	env.ambient_light_color = Color(0.55, 0.58, 0.68)
 	env.ambient_light_energy = 0.6
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.glow_enabled = true
+	env.glow_intensity = 0.5
 	env.fog_enabled = true
 	env.fog_mode = Environment.FOG_MODE_DEPTH
 	env.fog_depth_begin = 400.0
@@ -37,6 +39,6 @@ func _ready() -> void:
 	sun.light_color = Color(1.0, 0.86, 0.68)
 	sun.light_energy = 1.3
 	sun.shadow_enabled = true
-	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
+	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
 	sun.directional_shadow_max_distance = 70.0
 	add_child(sun)

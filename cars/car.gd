@@ -16,6 +16,7 @@ extends VehicleBody3D
 @export var handbrake_force: float = 6000.0
 @export_group("Steering")
 @export var steer_deg: Vector3 = Vector3(32.0, 14.0, 6.0)  ## max angle at 0 / 100 / 300 km/h
+@export var hood_cam: Vector3 = Vector3(0.0, 0.95, -0.55)
 @export_group("Aero")
 @export var down_max: float = 14000.0
 

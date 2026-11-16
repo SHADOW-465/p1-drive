@@ -6,7 +6,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] T01 Project skeleton + gate 1 — input map registered in code (autoload/settings.gd), *.uid git-ignored
 - [x] T02 Test track + static sky — oval dev track; road.gdshader and day_night.gd (static 17:00) started early
 - [x] T03 P1 physics core — 0-100 3.07 s, 0-200 6.80 s, top 345 (LOW aero, limiter), 100-0 28.8 m, 300-0 6.07 s; engine_force sign and friction fixed, see PLAN 6
-- [ ] T04 Camera + playable loop
+- [x] T04 Camera + playable loop — chase/hood rig in _process on interpolated car xf (physics interpolation on); Mobile renderer, MSAA 2x; --shot=N dev arg; 60 FPS windowed
 - [ ] T05 Active aero
 - [ ] T06 Smoke test + gate 2
 - [ ] T07 P1 procedural mesh

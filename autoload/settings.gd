@@ -39,3 +39,11 @@ func _init() -> void:
 ## True if the flag was passed either as a user arg (after --) or a plain arg.
 func has_arg(flag: String) -> bool:
 	return OS.get_cmdline_user_args().has(flag) or OS.get_cmdline_args().has(flag)
+
+
+## Value of "--name=value" from the command line, or def.
+func arg_value(flag: String, def: String) -> String:
+	for a: String in OS.get_cmdline_user_args() + OS.get_cmdline_args():
+		if a.begins_with(flag + "="):
+			return a.substr(flag.length() + 1)
+	return def
