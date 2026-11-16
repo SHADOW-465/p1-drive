@@ -17,7 +17,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] T12 One tile end to end — tile_gen/tile_node/terrain.gdshader; FULL tile 52 ms; scaled HeightMapShape3D fine under Jolt (diagonal (i+1,j)-(i,j+1)), collider vs mesh 0.000 m; smooth CPU normals instead of dFdx flat look; tests/tile_view dev scene
 - [x] T13 Streamer — rings FULL/MID/FAR, 3 worker jobs, 2 ms budgeted apply, build-then-swap; max job 143 ms; live FULL peaks at 13 during swaps (9 at rest), total <= 49
 - [x] T14 Floating origin — streamer calls Origin.maybe_shift; car moves itself + resets interpolation, trail shifted; tiles not interpolated
-- [ ] T15 Streaming test + gate
+- [x] T15 Streaming test + gate — closed 33 km triangle at 350 m/s wall clock: 39 tiles, 14 shifts, 0 stalls, streamer p99 0.21 ms / max 14 ms; forced shift at rest moves car < 0.1 m; gate takes ~100 s
 - [ ] T16 Road graph
 - [ ] T17 Road surface
 - [ ] T18 Road props
