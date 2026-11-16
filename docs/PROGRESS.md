@@ -12,7 +12,7 @@ Tick a box in the same commit that finishes the task. Details and done-criteria:
 - [x] T07 P1 procedural mesh — one-draw shell (loft + cut arches + canopy + patch details, car_paint.gdshader), wing/struts/flaps, lathe wheels; tests/car_view.tscn dev viewer
 - [x] T08 Lights, disc glow, trails — one Tail mesh (0.4 tail -> 4.0 brake), reverse lamp, shared disc heat material, headlight spot auto from DayNight.night_factor, ImmediateMesh trail
 - [x] T09 Engine audio — bake 68 ms (5 loops, cached); players not started headless (dummy driver leaks playbacks at exit)
-- [ ] T10 Handling polish
+- [x] T10 Handling polish — probe: full lock @100 slip 1 deg (understeers, 1.45 g), clean oval laps at 150/200/250 km/h; section 6 values kept as final; quit stops audio first
 - [ ] T11 Origin + terrain function
 - [ ] T12 One tile end to end
 - [ ] T13 Streamer

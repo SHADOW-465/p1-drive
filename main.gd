@@ -10,6 +10,7 @@ var _shot_at: int = 0
 
 
 func _ready() -> void:
+	get_tree().auto_accept_quit = false
 	spawn = car.global_transform
 	rig = CameraRig.new()
 	rig.car = car
@@ -34,4 +35,18 @@ func _process(_dt: float) -> void:
 	_frames += 1
 	if _shot_at > 0 and _frames == _shot_at:  # dev: --shot=<frame> saves logs/shot.png and quits
 		get_viewport().get_texture().get_image().save_png("res://logs/shot.png")
-		get_tree().quit()
+		quit_game()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		quit_game()
+
+
+## Stops audio first: quitting with playing streams reports leaked playbacks.
+func quit_game() -> void:
+	get_tree().paused = false
+	for p: Node in find_children("*", "AudioStreamPlayer", true, false):
+		(p as AudioStreamPlayer).stop()
+	await get_tree().create_timer(0.15).timeout
+	get_tree().quit()
