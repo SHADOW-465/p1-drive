@@ -16,7 +16,7 @@ const VIS_LOD1_START: PackedFloat32Array = [120.0, 120.0, 120.0, 0.0, 0.0, 80.0,
 const VIS_MAX_END: PackedFloat32Array = [999.0, 999.0, 999.0, 120.0, 90.0, 999.0, 80.0, 999.0]
 # Scale-1 crown half extent and height of each LOD0 mesh (baked .res AABBs) and the clear zone kept between it and a road's
 # shoulder: no trunk, crown, shrub or rock stands in a road corridor (RoadMesher.corridor_edge).
-const CROWN: PackedFloat32Array = [2.95, 4.17, 2.98, 0.5, 1.2, 2.2, 0.4, 4.2]  # half width of baked tree AABBs (synced Nov 22)
+const CROWN: PackedFloat32Array = [2.95, 4.17, 3.8, 0.5, 1.2, 2.2, 0.4, 4.2]  # half width of baked tree AABBs (synced Nov 22)
 const HEIGHT: PackedFloat32Array = [10.0, 12.5, 9.5, 1.6, 1.2, 1.2, 0.55, 9.0]
 const CLEAR_ZONE: PackedFloat32Array = [2.0, 2.0, 2.0, 0.6, 0.4, 1.0, 0.2, 2.0]
 
@@ -44,7 +44,7 @@ static func ensure_resources() -> void:
 	var tree_specs: Array[Array] = [
 		["tree_conifer", bark_a_diff, bark_a_nor, bark_a_arm, Color(0.40, 0.62, 0.36), 10.0, 0.06],
 		["tree_pine", bark_a_diff, bark_a_nor, bark_a_arm, Color(0.44, 0.66, 0.40), 12.5, 0.05],
-		["tree_oak", bark_b_diff, bark_b_nor, bark_b_arm, Color(0.84, 0.96, 0.72), 9.5, 0.07],
+		["tree_oak", bark_b_diff, bark_b_nor, bark_b_arm, Color(0.50, 0.78, 0.44), 9.5, 0.07],
 	]
 	for ti: int in tree_specs.size():
 		var sp: Array = tree_specs[ti]

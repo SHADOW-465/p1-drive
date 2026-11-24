@@ -23,7 +23,7 @@ func _process(_dt: float) -> bool:
 	# User-supplied trees (run with: -- user_trees)
 	if OS.get_cmdline_user_args().has("user_trees"):
 		_bake_glb_tree("res://assets/models/staging/tree-lowpoly/source/Tree 1 and 2.fbx", "tree_conifer", 10.0, "Tree 2")
-		_bake_glb_tree("res://assets/models/staging/tree-lowpoly/source/Tree 1 and 2.fbx", "tree_oak", 9.5, "Tree 1")
+		_bake_glb_tree("res://assets/models/staging/mmc-trees/source/mmc-trees-flowers-grass.fbx", "tree_oak", 9.5, "tree-stylized-01")
 		_bake_glb_tree("res://assets/models/staging/sakura/source/Sakura/Sakura/Sakura.fbx", "tree_sakura", 9.0)
 		print("USER TREES BAKE DONE")
 		quit(0)
@@ -31,7 +31,7 @@ func _process(_dt: float) -> bool:
 
 	_bake_glb_tree("res://assets/models/staging/mmc-trees/source/mmc-trees-flowers-grass.fbx", "tree_pine", 12.5, "tree-stylized-04-green")
 	_bake_glb_tree("res://assets/models/staging/tree-lowpoly/source/Tree 1 and 2.fbx", "tree_conifer", 10.0, "Tree 2")
-	_bake_glb_tree("res://assets/models/staging/tree-lowpoly/source/Tree 1 and 2.fbx", "tree_oak", 9.5, "Tree 1")
+	_bake_glb_tree("res://assets/models/staging/mmc-trees/source/mmc-trees-flowers-grass.fbx", "tree_oak", 9.5, "tree-stylized-01")
 	_bake_ph_clump("res://assets/models/nature/shrub_03/shrub_03.gltf", "shrub", [0, 1], 1.35, 0.04, 0.14)
 	_bake_ph_clump("res://assets/models/nature/fern_02/fern_02.gltf", "fern", [0], 0.95, 0.03, 0.22)
 	_bake_grass_patch()
