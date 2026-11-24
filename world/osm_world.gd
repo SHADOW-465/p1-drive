@@ -5,7 +5,12 @@ extends RefCounted
 ## footprints, water. Pure static and read-only after load, so tile workers may call it freely.
 ## `--world=old` (command line or user args) selects the earlier procedural map instead.
 
-const DIR: String = "res://data/world/baked/"
+## Map data folder. Chosen at start-up with --map=<id> (see MAP_DIRS). Default: the original Horizon Triland map.
+static var DIR: String = "res://data/world/baked/"
+const MAP_DIRS: Dictionary = {
+	"triland": "res://data/world/baked/",
+	"lofoten": "res://data/world/lofoten/",
+}
 const NONE: float = -9999.0
 
 static var enabled: bool = true
@@ -25,6 +30,13 @@ static func _static_init() -> void:
 	for a: String in OS.get_cmdline_args() + OS.get_cmdline_user_args():
 		if a == "--world=old":
 			enabled = false
+		if a.begins_with("--map="):
+			var mid: String = a.substr(6)
+			if MAP_DIRS.has(mid) and FileAccess.file_exists(String(MAP_DIRS[mid]) + "meta.json"):
+				DIR = MAP_DIRS[mid]
+			else:
+				push_warning("MAP %s is not built yet (no meta.json); using triland" % mid)
+				print("MAP %s not built; using triland" % mid)
 	if enabled:
 		_load()
 
