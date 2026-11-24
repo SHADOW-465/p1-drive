@@ -1,0 +1,1003 @@
+{
+	"default": "mclaren_p1_vecarz",
+	"cars": [
+		{
+			"id": "p1",
+			"name": "McLaren P1 (inspired)",
+			"scene": "res://cars/p1/p1.tscn",
+			"cockpit": {
+				"wheel_pos": [
+					-0.34,
+					0.76,
+					-0.46
+				],
+				"wheel_tilt": 24.0,
+				"cluster_pos": [
+					-0.34,
+					0.836,
+					-0.578
+				],
+				"cluster_size": [
+					0.2,
+					0.085
+				],
+				"cluster_tilt": -14.0,
+				"cabin_light": [
+					-0.2,
+					1.02,
+					0.15
+				],
+				"dash_light": [
+					-0.2,
+					0.72,
+					-0.28
+				],
+				"mirrors": [
+					{
+						"name": "rear",
+						"pos": [
+							0.0,
+							1.03,
+							-0.47
+						],
+						"normal": [
+							-0.42,
+							0.0,
+							0.9
+						],
+						"size": [
+							0.21,
+							0.058
+						],
+						"cam": [
+							0.0,
+							0.95,
+							1.9
+						],
+						"cam_yaw": 180.0,
+						"fov": 38,
+						"res": [
+							320,
+							90
+						],
+						"every": 2
+					},
+					{
+						"name": "left",
+						"pos": [
+							-0.96,
+							0.895,
+							-0.7
+						],
+						"normal": [
+							0.65,
+							-0.04,
+							0.76
+						],
+						"size": [
+							0.11,
+							0.05
+						],
+						"cam": [
+							-1.02,
+							0.9,
+							-0.75
+						],
+						"cam_yaw": 205.0,
+						"fov": 48,
+						"res": [
+							160,
+							100
+						],
+						"every": 3
+					},
+					{
+						"name": "right",
+						"pos": [
+							0.96,
+							0.895,
+							-0.7
+						],
+						"normal": [
+							-0.87,
+							-0.02,
+							0.49
+						],
+						"size": [
+							0.11,
+							0.05
+						],
+						"cam": [
+							1.02,
+							0.9,
+							-0.75
+						],
+						"cam_yaw": 155.0,
+						"fov": 48,
+						"res": [
+							160,
+							100
+						],
+						"every": 3
+					}
+				]
+			}
+		},
+		{
+			"id": "mclaren_p1_vecarz",
+			"name": "McLaren P1",
+			"scene": "res://cars/glb/glb_car.tscn",
+			"glb": "res://assets_nc/cars/mclaren_p1_vecarz/model/unz/c4d/mclaren_p1.c4d.fbx",
+			"model_yaw_deg": 180.0,
+			"length": 4.588,
+			"width": 1.946,
+			"height": 1.188,
+			"wheelbase": 2.67,
+			"track_front": 1.66,
+			"track_rear": 1.62,
+			"mass": 1450.0,
+			"power_ps": 916.0,
+			"torque_nm": 900.0,
+			"drivetrain": "RWD",
+			"active_aero": true,
+			"top_speed_kmh": 350.0,
+			"gear_tops": [
+				68,
+				110,
+				152,
+				198,
+				250,
+				300,
+				350
+			],
+			"wheel_match": [
+				"Rim_",
+				"Tyre_",
+				"Brake_Disk"
+			],
+			"caliper_match": [
+				"g_Susp_Hub"
+			],
+			"head_match": [
+				"LIGHT_0",
+				"LIGHT_1"
+			],
+			"tail_match": [
+				"LIGHT_BRAKE"
+			],
+			"paint_match": [
+				"Carpaint"
+			],
+			"hood_cam": [
+				0.0,
+				0.95,
+				-0.5
+			],
+			"cockpit_cam": [
+				-0.33,
+				0.97,
+				0.1
+			],
+			"head_lamp": [
+				0.7,
+				0.6,
+				-2.1
+			],
+			"tail_lamp": [
+				0.7,
+				0.7,
+				2.2
+			],
+			"cockpit": {
+				"model_interior": true,
+				"steer_match": [
+					"GEO_STEER1"
+				],
+				"wheel_tilt": 22.0,
+				"cluster_pos": [
+					-0.33,
+					0.98,
+					-0.8
+				],
+				"cluster_size": [
+					0.26,
+					0.062
+				],
+				"cluster_tilt": -20.0,
+				"cabin_light": [
+					-0.15,
+					1.0,
+					0.0
+				],
+				"mirrors": [
+					{
+						"name": "rear",
+						"pos": [
+							-0.03,
+							1.16,
+							-0.545
+						],
+						"normal": [
+							-0.42,
+							0.0,
+							0.9
+						],
+						"size": [
+							0.175,
+							0.05
+						],
+						"cam": [
+							0.0,
+							0.95,
+							2.1
+						],
+						"cam_yaw": 180.0,
+						"fov": 38,
+						"res": [
+							320,
+							90
+						],
+						"every": 2
+					},
+					{
+						"name": "left",
+						"pos": [
+							-0.95,
+							0.87,
+							-0.66
+						],
+						"normal": [
+							0.61,
+							0.14,
+							0.78
+						],
+						"size": [
+							0.13,
+							0.085
+						],
+						"cam": [
+							-1.0,
+							0.9,
+							-0.7
+						],
+						"cam_yaw": 170.0,
+						"fov": 48,
+						"res": [
+							160,
+							100
+						],
+						"every": 3
+					},
+					{
+						"name": "right",
+						"pos": [
+							0.95,
+							0.87,
+							-0.66
+						],
+						"normal": [
+							-0.84,
+							0.1,
+							0.54
+						],
+						"size": [
+							0.13,
+							0.085
+						],
+						"cam": [
+							1.0,
+							0.9,
+							-0.7
+						],
+						"cam_yaw": 190.0,
+						"fov": 48,
+						"res": [
+							160,
+							100
+						],
+						"every": 3
+					}
+				]
+			},
+			"no_shadow_mats": [
+				"INT_",
+				"IN_Cinture"
+			],
+			"hide_match": [
+				"CINTURE_ON"
+			],
+			"wing_match": [
+				"g_Wing"
+			],
+			"strut_match": [
+				"g_Wing_Guide",
+				"g_Wing_Turn"
+			],
+			"light_mats": [
+				"Headlights",
+				"Taillights"
+			],
+			"glass_mats": [
+				"Windows",
+				"Clear_Glass"
+			],
+			"paint_color": [
+				1.0,
+				0.3,
+				0.02
+			],
+			"tex_dir": "res://assets_nc/cars/mclaren_p1_vecarz/model/unz/c4d/",
+			"mats_default": {
+				"rough": 0.7
+			},
+			"mats": {
+				"Rim": {
+					"tint": 0.55,
+					"metal": 0.9,
+					"rough": 0.3
+				},
+				"Brake_Disk": {
+					"tint": 0.5,
+					"metal": 0.8,
+					"rough": 0.45
+				},
+				"Tyre": {
+					"rough": 0.85,
+					"opaque": true
+				},
+				"Brake_Caliper": {
+					"rough": 0.4,
+					"metal": 0.3
+				},
+				"Mechanicals": {
+					"rough": 0.5,
+					"metal": 0.6
+				},
+				"Details": {
+					"tint": 0.8,
+					"metal": 0.8,
+					"rough": 0.3
+				},
+				"Carbon_Mult50": {
+					"weave_m": 0.02,
+					"tint": 0.45,
+					"rough": 0.35,
+					"metal": 0.1,
+					"opaque": true
+				},
+				"Matte_Black": {
+					"rough": 0.8,
+					"opaque": true
+				},
+				"Chrome": {
+					"metal": 1.0,
+					"rough": 0.08
+				},
+				"Mirror": {
+					"tint": 0.8,
+					"metal": 1.0,
+					"rough": 0.03
+				},
+				"Grid1_Mult70": {
+					"tint": 0.05,
+					"rough": 0.6
+				},
+				"INT_PLASTIC_Black": {
+					"tint": 0.37,
+					"rough": 0.6
+				},
+				"INT_carbon": {
+					"weave_m": 0.02,
+					"opaque": true,
+					"tint": 0.3,
+					"rough": 0.45
+				},
+				"INT_Velvet": {
+					"tint": 0.12,
+					"rough": 1.0,
+					"opaque": true
+				},
+				"INT_Skin_A": {
+					"tint": 0.2,
+					"rough": 0.6,
+					"opaque": true
+				},
+				"INT_Cuciture": {
+					"rough": 0.8,
+					"opaque": true
+				},
+				"INT_Carpet": {
+					"tint": 0.2,
+					"rough": 1.0,
+					"opaque": true
+				},
+				"INT_METAL_Aluminium": {
+					"metal": 0.9,
+					"rough": 0.3
+				},
+				"INT_DISPLAY": {
+					"rough": 0.3,
+					"emit": true
+				},
+				"INT_Decals_REF_spec": {
+					"skip": true
+				},
+				"INT_Decals_REF_GLOSS": {
+					"skip": true
+				},
+				"INT_Decals_REF_AT_GLOSS": {
+					"skip": true
+				},
+				"INT_Decals_FLAT": {
+					"skip": true
+				}
+			}
+		},
+		{
+			"id": "mclaren_600lt",
+			"name": "McLaren 600LT",
+			"scene": "res://cars/glb/glb_car.tscn",
+			"glb": "res://assets_nc/cars/mclaren_600lt/source/2019_mclaren_600lt.glb",
+			"model_yaw_deg": 180.0,
+			"length": 4.6,
+			"width": 1.96,
+			"height": 1.19,
+			"wheelbase": 2.67,
+			"track_front": 1.669,
+			"track_rear": 1.621,
+			"mass": 1356.0,
+			"power_ps": 600.0,
+			"torque_nm": 620.0,
+			"drivetrain": "RWD",
+			"active_aero": false,
+			"top_speed_kmh": 328.0,
+			"gear_tops": [
+				68,
+				112,
+				152,
+				198,
+				248,
+				292,
+				328
+			],
+			"wheel_match": [
+				"m_Wheel",
+				"Wheel1A"
+			],
+			"caliper_match": [
+				"Calliper"
+			],
+			"head_match": [
+				"m_HeadLight"
+			],
+			"tail_match": [
+				"m_TailLight"
+			],
+			"paint_match": [
+				"M_CarPaint_Max"
+			],
+			"hood_cam": [
+				0.0,
+				0.95,
+				-0.5
+			],
+			"cockpit_cam": [
+				-0.32,
+				1.02,
+				0.1
+			],
+			"head_lamp": [
+				0.68,
+				0.56,
+				-2.18
+			],
+			"tail_lamp": [
+				0.74,
+				0.66,
+				2.05
+			],
+			"cockpit": {
+				"model_interior": true,
+				"steer_match": [
+					"SteeringWheel"
+				],
+				"wheel_tilt": 22.0,
+				"cluster_pos": [
+					-0.33,
+					0.74,
+					-0.72
+				],
+				"cluster_size": [
+					0.26,
+					0.062
+				],
+				"cluster_tilt": -6.0,
+				"cabin_light": [
+					-0.15,
+					1.0,
+					0.0
+				],
+				"mirrors": [
+					{
+						"name": "rear",
+						"pos": [
+							0.0,
+							1.01,
+							-0.545
+						],
+						"normal": [
+							-0.42,
+							0.0,
+							0.9
+						],
+						"size": [
+							0.2,
+							0.056
+						],
+						"cam": [
+							0.0,
+							0.95,
+							2.1
+						],
+						"cam_yaw": 180.0,
+						"fov": 38,
+						"res": [
+							320,
+							90
+						],
+						"every": 2
+					},
+					{
+						"name": "left",
+						"pos": [
+							-0.95,
+							0.87,
+							-0.66
+						],
+						"normal": [
+							0.61,
+							0.14,
+							0.78
+						],
+						"size": [
+							0.13,
+							0.085
+						],
+						"cam": [
+							-1.0,
+							0.9,
+							-0.7
+						],
+						"cam_yaw": 170.0,
+						"fov": 48,
+						"res": [
+							160,
+							100
+						],
+						"every": 3
+					},
+					{
+						"name": "right",
+						"pos": [
+							0.95,
+							0.87,
+							-0.66
+						],
+						"normal": [
+							-0.84,
+							0.1,
+							0.54
+						],
+						"size": [
+							0.13,
+							0.085
+						],
+						"cam": [
+							1.0,
+							0.9,
+							-0.7
+						],
+						"cam_yaw": 190.0,
+						"fov": 48,
+						"res": [
+							160,
+							100
+						],
+						"every": 3
+					}
+				]
+			}
+		},
+		{
+			"id": "koenigsegg_gemera",
+			"name": "Koenigsegg Gemera",
+			"scene": "res://cars/glb/glb_car.tscn",
+			"glb": "res://assets_nc/cars/koenigsegg_gemera/source/source/2021_koenigsegg_gemera.glb",
+			"model_yaw_deg": 180.0,
+			"length": 4.98,
+			"width": 2.0,
+			"height": 1.29,
+			"wheelbase": 3.0,
+			"track_front": 1.7,
+			"track_rear": 1.69,
+			"mass": 1880.0,
+			"power_ps": 1700.0,
+			"torque_nm": 3500.0,
+			"drivetrain": "AWD",
+			"active_aero": false,
+			"top_speed_kmh": 400.0,
+			"gear_tops": [
+				70,
+				115,
+				165,
+				220,
+				280,
+				345,
+				400
+			],
+			"wheel_match": [
+				"Wheel1A_3D"
+			],
+			"caliper_match": [
+				"Callipers"
+			],
+			"head_match": [],
+			"tail_match": [],
+			"paint_match": [
+				"Paint_Material",
+				"phong2"
+			],
+			"hood_cam": [
+				0.0,
+				1.0,
+				-0.7
+			],
+			"cockpit_cam": [
+				-0.36,
+				1.0,
+				-0.2
+			],
+			"head_lamp": [
+				0.72,
+				0.6,
+				-2.35
+			],
+			"tail_lamp": [
+				0.78,
+				0.7,
+				2.3
+			],
+			"cockpit": {
+				"model_interior": true,
+				"steer_match": [
+					"Steering"
+				],
+				"wheel_tilt": 22.0,
+				"cluster_pos": [
+					-0.33,
+					0.74,
+					-0.72
+				],
+				"cluster_size": [
+					0.26,
+					0.062
+				],
+				"cluster_tilt": -6.0,
+				"cabin_light": [
+					-0.15,
+					1.0,
+					0.0
+				],
+				"mirrors": [
+					{
+						"name": "rear",
+						"pos": [
+							0.0,
+							1.01,
+							-0.545
+						],
+						"normal": [
+							-0.42,
+							0.0,
+							0.9
+						],
+						"size": [
+							0.2,
+							0.056
+						],
+						"cam": [
+							0.0,
+							0.95,
+							2.1
+						],
+						"cam_yaw": 180.0,
+						"fov": 38,
+						"res": [
+							320,
+							90
+						],
+						"every": 2
+					},
+					{
+						"name": "left",
+						"pos": [
+							-0.95,
+							0.87,
+							-0.66
+						],
+						"normal": [
+							0.61,
+							0.14,
+							0.78
+						],
+						"size": [
+							0.13,
+							0.085
+						],
+						"cam": [
+							-1.0,
+							0.9,
+							-0.7
+						],
+						"cam_yaw": 170.0,
+						"fov": 48,
+						"res": [
+							160,
+							100
+						],
+						"every": 3
+					},
+					{
+						"name": "right",
+						"pos": [
+							0.95,
+							0.87,
+							-0.66
+						],
+						"normal": [
+							-0.84,
+							0.1,
+							0.54
+						],
+						"size": [
+							0.13,
+							0.085
+						],
+						"cam": [
+							1.0,
+							0.9,
+							-0.7
+						],
+						"cam_yaw": 190.0,
+						"fov": 48,
+						"res": [
+							160,
+							100
+						],
+						"every": 3
+					}
+				]
+			},
+			"paint_color": [
+				0.05,
+				0.1,
+				0.3
+			],
+			"glass_mats": [
+				"Window_Material"
+			]
+		},
+		{
+			"id": "bentley_exp10_speed6",
+			"name": "Bentley EXP 10 Speed 6",
+			"scene": "res://cars/glb/glb_car.tscn",
+			"glb": "res://assets_nc/cars/bentley_exp10_speed6/source/model/FINAL_MODEL_1.fbx",
+			"model_yaw_deg": 180.0,
+			"length": 4.6,
+			"width": 1.95,
+			"height": 1.3,
+			"wheelbase": 2.8,
+			"track_front": 1.66,
+			"track_rear": 1.66,
+			"mass": 1900.0,
+			"power_ps": 650.0,
+			"torque_nm": 900.0,
+			"drivetrain": "RWD",
+			"active_aero": false,
+			"top_speed_kmh": 300.0,
+			"gear_tops": [
+				62,
+				105,
+				150,
+				200,
+				250,
+				300
+			],
+			"wheel_match": [
+				"_Wheel"
+			],
+			"caliper_match": [
+				"bone_caliper"
+			],
+			"head_match": [],
+			"tail_match": [
+				"lights_"
+			],
+			"paint_match": [
+				"carP"
+			],
+			"hood_cam": [
+				0.0,
+				1.0,
+				-0.6
+			],
+			"cockpit_cam": [
+				-0.36,
+				1.05,
+				-0.1
+			],
+			"head_lamp": [
+				0.7,
+				0.6,
+				-2.1
+			],
+			"tail_lamp": [
+				0.75,
+				0.75,
+				2.05
+			],
+			"cockpit": {
+				"wheel_tilt": 24.0,
+				"cluster_pos": [
+					-0.36,
+					0.85,
+					-0.62
+				],
+				"cluster_size": [
+					0.26,
+					0.062
+				],
+				"cluster_tilt": -6.0,
+				"cabin_light": [
+					-0.15,
+					1.0,
+					0.0
+				],
+				"mirrors": [
+					{
+						"name": "rear",
+						"pos": [
+							0.0,
+							1.01,
+							-0.545
+						],
+						"normal": [
+							-0.42,
+							0.0,
+							0.9
+						],
+						"size": [
+							0.2,
+							0.056
+						],
+						"cam": [
+							0.0,
+							0.95,
+							2.1
+						],
+						"cam_yaw": 180.0,
+						"fov": 38,
+						"res": [
+							320,
+							90
+						],
+						"every": 2
+					},
+					{
+						"name": "left",
+						"pos": [
+							-0.95,
+							0.87,
+							-0.66
+						],
+						"normal": [
+							0.61,
+							0.14,
+							0.78
+						],
+						"size": [
+							0.13,
+							0.085
+						],
+						"cam": [
+							-1.0,
+							0.9,
+							-0.7
+						],
+						"cam_yaw": 170.0,
+						"fov": 48,
+						"res": [
+							160,
+							100
+						],
+						"every": 3
+					},
+					{
+						"name": "right",
+						"pos": [
+							0.95,
+							0.87,
+							-0.66
+						],
+						"normal": [
+							-0.84,
+							0.1,
+							0.54
+						],
+						"size": [
+							0.13,
+							0.085
+						],
+						"cam": [
+							1.0,
+							0.9,
+							-0.7
+						],
+						"cam_yaw": 190.0,
+						"fov": 48,
+						"res": [
+							160,
+							100
+						],
+						"every": 3
+					}
+				],
+				"wheel_pos": [
+					-0.36,
+					0.78,
+					-0.5
+				],
+				"dash_light": [
+					-0.2,
+					0.75,
+					-0.3
+				]
+			},
+			"light_mats": [
+				"glows"
+			],
+			"glass_mats": [
+				"wire_253054138"
+			],
+			"mats": {
+				"tire": {
+					"rough": 0.9,
+					"nm": "car_tyres_new_nm",
+					"occ": "car_tyres_new_occ",
+					"tint": 0.3
+				},
+				"rims": {
+					"metal": 0.9,
+					"rough": 0.25
+				},
+				"df": {
+					"metal": 0.5,
+					"rough": 0.35,
+					"nm": "car_bentley_exp_10_speed_6_normal",
+					"occ": "car_bentley_exp_10_speed_6_occ"
+				},
+				"cp1": {
+					"rough": 0.4
+				},
+				"wire_253054128": {
+					"rough": 0.7,
+					"nm": "car_bottom_nm"
+				},
+				"wire_253054130": {
+					"rough": 0.6
+				}
+			},
+			"tex_dir": "res://assets_nc/cars/bentley_exp10_speed6/source/model/"
+		}
+	]
+}

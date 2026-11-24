@@ -31,7 +31,7 @@ func _ready() -> void:
 	car.player_controlled = false
 	car.position.y = 0.1
 	add_child(car)
-	aero = car.get_node_or_null("Aero") as ActiveAero
+	aero = car.find_child("Aero", true, false) as ActiveAero
 	lights = car.get_node_or_null("Lights") as CarLights
 	if aero == null:
 		check_aero = false

@@ -27,6 +27,7 @@ var frame_ms: float = 0.0  # whole streamer cost this frame
 var _slots: Dictionary[Vector2i, Slot] = {}
 var _applying: Array[TileNode] = []
 var _free_q: Array[TileNode] = []
+var _last_w: Vector3 = Vector3(1e9, 0.0, 1e9)
 var _jobs: Dictionary[int, int] = {}  # job id -> WorkerThreadPool task id
 var _next_job: int = 1
 var _mutex: Mutex = Mutex.new()
@@ -39,6 +40,14 @@ func _ready() -> void:
 	Settings.settings_changed.connect(_on_settings_changed)
 	TileGen.GRID.size()  # make sure the statics are initialised on the main thread
 	Scatter.ensure_resources()
+	TileNode.get_terrain_material()
+	TileNode.get_road_material()
+	TileNode.get_water_material()
+	TileNode.get_props_material()
+	TileNode.get_building_material()
+	TileNode.get_building_lod_material()
+	if not OsmWorld.enabled:
+		(load("res://world/hero/city_downtown.gd") as GDScript).call("prewarm")
 	var hero_cfg: Dictionary = TerrainFn.def.get("hero_tiles", {})
 	for k: String in hero_cfg:
 		var ov: String = str((hero_cfg[k] as Dictionary).get("overlay", ""))
@@ -49,6 +58,7 @@ func _ready() -> void:
 
 
 func _on_settings_changed() -> void:
+	Scatter.update_shader_ranges()
 	for c: Node in get_children():
 		var sc: Node = c.get_node_or_null(^"Scatter")
 		if sc != null:
@@ -105,21 +115,24 @@ func _process(_dt: float) -> void:
 	for i: int in mini(MAX_FREES, _free_q.size()):
 		(_free_q.pop_back() as TileNode).queue_free()
 	var t5: int = Time.get_ticks_usec()
-	if t5 - t0 > 20000:
-		print("streamer hitch (us): wants %d collect %d submit %d apply %d free %d" % [t1 - t0, t2 - t1, t3 - t2, t4 - t3, t5 - t4])
 	FpsLog.tiles_full = full_count
 	FpsLog.tiles_lod = lod_count
-	frame_ms = (Time.get_ticks_usec() - t0) / 1000.0
+	frame_ms = (t5 - t0) / 1000.0
+	if t5 - t0 > 20000:
+		print("streamer hitch (us): wants %d collect %d submit %d apply %d free %d" % [t1 - t0, t2 - t1, t3 - t2, t4 - t3, t5 - t4])
 
 
 func _update_centre(w: Vector3) -> bool:
+	var teleported: bool = w.distance_squared_to(_last_w) > 10000.0
+	_last_w = w
 	var t := Vector2i(floori(w.x / TileGen.TILE), floori(w.z / TileGen.TILE))
 	if t == centre:
 		return false
-	var lo: Vector2 = Vector2(centre) * TileGen.TILE - Vector2(HYST, HYST)
-	var hi: Vector2 = lo + Vector2.ONE * (TileGen.TILE + 2.0 * HYST)
-	if w.x > lo.x and w.x < hi.x and w.z > lo.y and w.z < hi.y:
-		return false
+	if not teleported:
+		var lo: Vector2 = Vector2(centre) * TileGen.TILE - Vector2(HYST, HYST)
+		var hi: Vector2 = lo + Vector2.ONE * (TileGen.TILE + 2.0 * HYST)
+		if w.x > lo.x and w.x < hi.x and w.z > lo.y and w.z < hi.y:
+			return false
 	centre = t
 	return true
 
@@ -187,13 +200,16 @@ func _dist(key: Vector2i) -> int:
 
 
 func _submit() -> void:
+	if _jobs.size() >= MAX_JOBS:
+		queue_len = _jobs.size() + _applying.size() + 1
+		return
 	var todo: Array[Vector2i] = []
 	for key: Vector2i in _slots:
 		var s: Slot = _slots[key]
 		if s.job == 0 and s.next == null and (s.live == null or s.live.lod != s.want):
 			todo.append(key)
 	queue_len = todo.size() + _jobs.size() + _applying.size()
-	if todo.is_empty() or _jobs.size() >= MAX_JOBS:
+	if todo.is_empty():
 		return
 	todo.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return _dist(a) < _dist(b))
 	for key: Vector2i in todo:
@@ -227,14 +243,18 @@ func _apply() -> void:
 			if not t.step():
 				_applying.remove_at(best)
 				var s: Slot = _slots[Vector2i(t.tx, t.tz)]
-				t.visible = true
 				if s.live != null:
+					s.live.disarm_collision()
 					_free_q.append(s.live)
+				t.arm_collision()
+				t.visible = true
 				s.live = t
 				s.next = null
 			var then: int = now
 			now = Time.get_ticks_usec()
 			max_step_ms = maxf(max_step_ms, (now - then) / 1000.0)
+			if now - then > 1500:
+				break
 		last_apply_ms = (now - t0) / 1000.0
 	full_count = 0
 	lod_count = 0

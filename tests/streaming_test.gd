@@ -4,7 +4,7 @@ extends Node3D
 ## Prints STREAM PASS / STREAM FAIL: <reason>.
 
 const SPEED: float = 350.0  # m/s; 3.6x the car's top speed
-const ROUTE: PackedVector2Array = [Vector2(-5000, -6500), Vector2(5500, -5200), Vector2(-2500, 3500)]
+const ROUTE: PackedVector2Array = [Vector2(-6000, 3800), Vector2(-4600, -1800), Vector2(-1600, -5550), Vector2(4300, -6500), Vector2(7600, 4800), Vector2(4600, 5632)]
 
 var car: Car
 var world: TileStreamer

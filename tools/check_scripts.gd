@@ -19,7 +19,7 @@ func _process(_delta: float) -> bool:
 func _scan(dir: String) -> int:
 	var bad: int = 0
 	for d: String in DirAccess.get_directories_at(dir):
-		if not d.begins_with("."):
+		if not d.begins_with(".") and not (dir == "res://" and d == "logs"):
 			bad += _scan(dir.path_join(d))
 	for f: String in DirAccess.get_files_at(dir):
 		if f.get_extension() in ["gd", "tscn", "gdshader", "tres"]:
@@ -35,7 +35,7 @@ func _scan(dir: String) -> int:
 ## Each entry: script path with a static self_check() -> String ("" = ok).
 func _self_checks() -> int:
 	var bad: int = 0
-	for path: String in ["res://world/terrain_fn.gd", "res://world/road_graph.gd"]:
+	for path: String in ["res://world/terrain_fn.gd", "res://world/road_graph.gd", "res://ui/map_data.gd", "res://ui/gps_route.gd"]:
 		var msg: String = (load(path) as GDScript).call("self_check")
 		if msg != "":
 			print("CHECK FAIL %s: %s" % [path, msg])

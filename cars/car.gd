@@ -17,6 +17,7 @@ extends VehicleBody3D
 @export_group("Steering")
 @export var steer_deg: Vector3 = Vector3(32.0, 14.0, 6.0)  ## max angle at 0 / 100 / 300 km/h
 @export var hood_cam: Vector3 = Vector3(0.0, 0.95, -0.55)
+@export var cockpit_cam: Vector3 = Vector3(-0.34, 0.86, 0.02)
 @export_group("Drift")
 @export var rear_grip_normal: float = 1.6
 @export var rear_grip_drift: float = 1.08
@@ -40,18 +41,32 @@ var k_down: float = 0.6
 var brake_now: float = 0.0  # effective brake pedal (after the reverse swap)
 var slip_angle_deg: float = 0.0
 var skid_intensity: float = 0.0
+var steer_ratio: float = 0.0
 
 var _steer: float = 0.0
+var _shadow: MeshInstance3D
 var _tc: float = 1.0
 var _rear_grip: float = 1.6
 var _wheels: Array[VehicleWheel3D] = []
 var _n_traction: int = 0
+
+## The body box floor sat 8 cm above the wheel bottoms, so any grade break, tile-seam step or kerb in the road
+## colliders drove the box into the road and Jolt resolved it as a hard kick. Lift it clear of the wheel travel.
+const BODY_LIFT: float = 0.2
+
+
+func set_cockpit_active(on: bool) -> void:
+	var cp: Node = get_node_or_null("Cockpit")
+	if cp != null and cp.has_method("set_cockpit_active"):
+		cp.call("set_cockpit_active", on)
 
 
 func _ready() -> void:
 	drivetrain.gear_tops = gear_tops
 	_rear_grip = rear_grip_normal
 	Origin.shifted.connect(_on_origin_shift)
+	_lift_body_box()
+	_add_contact_shadow()
 	for c: Node in get_children():
 		if c is VehicleWheel3D:
 			_wheels.append(c as VehicleWheel3D)
@@ -59,7 +74,54 @@ func _ready() -> void:
 				_n_traction += 1
 
 
+## Soft dark blob on the road under the car: the sun shadow vanishes in overcast/rain, which made the car look afloat.
+## A Decal would be nicer but does not render in this project's mobile renderer setup, so it is a flat unshaded quad.
+func _add_contact_shadow() -> void:
+	var g := Gradient.new()
+	g.colors = PackedColorArray([Color(0, 0, 0, 0.8), Color(0, 0, 0, 0)])
+	g.offsets = PackedFloat32Array([0.55, 1.0])
+	var tex := GradientTexture2D.new()
+	tex.gradient = g
+	tex.fill = GradientTexture2D.FILL_RADIAL
+	tex.fill_from = Vector2(0.5, 0.5)
+	tex.fill_to = Vector2(0.5, 0.0)
+	var m := StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.albedo_texture = tex
+	m.disable_receive_shadows = true
+	var pm := PlaneMesh.new()
+	pm.size = Vector2(2.7, 5.6)
+	pm.material = m
+	_shadow = MeshInstance3D.new()
+	_shadow.name = "ContactShadow"
+	_shadow.mesh = pm
+	_shadow.layers = 2  # not part of the reflection-probe capture
+	_shadow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(_shadow)
+
+
+## Raise the collision box and pin the inertia to what the unlifted box gave, so roll/pitch/yaw feel is unchanged.
+func _lift_body_box() -> void:
+	var cs := get_node_or_null(^"CollisionShape3D") as CollisionShape3D
+	var box: BoxShape3D = cs.shape as BoxShape3D if cs != null else null
+	if box == null:
+		return
+	var s: Vector3 = box.size
+	var d: Vector3 = cs.position - center_of_mass
+	inertia = Vector3(
+		mass / 12.0 * (s.y * s.y + s.z * s.z) + mass * (d.y * d.y + d.z * d.z),
+		mass / 12.0 * (s.x * s.x + s.z * s.z) + mass * (d.x * d.x + d.z * d.z),
+		mass / 12.0 * (s.x * s.x + s.y * s.y) + mass * (d.x * d.x + d.y * d.y))
+	cs.position.y += BODY_LIFT
+
+
 func _physics_process(dt: float) -> void:
+	if _shadow != null and not _wheels.is_empty():  # flat on the road under the tyres, follows the body's pitch/roll
+		var y: float = 0.0
+		for w: VehicleWheel3D in _wheels:
+			y += w.position.y - w.wheel_radius + GlbBody.CONTACT_SLOP
+		_shadow.position.y = y / _wheels.size() + 0.02
 	if player_controlled:
 		in_throttle = Input.get_action_strength("throttle")
 		in_brake = Input.get_action_strength("brake")
@@ -91,6 +153,7 @@ func _physics_process(dt: float) -> void:
 		steer_cmd = clampf(in_steer + signf(v_loc.x) * cs_amt * (1.0 - 0.5 * absf(in_steer)), -1.0, 1.0)
 	var rate: float = 9.0 if absf(steer_cmd) < absf(_steer) else 6.0
 	_steer = move_toward(_steer, steer_cmd, rate * dt)
+	steer_ratio = _steer
 	steering = -_steer * deg_to_rad(_max_steer_deg(speed_kmh))
 
 	# Rear grip: keep normal grip driving unchanged when drift_mode and handbrake are off.
@@ -158,11 +221,14 @@ func _max_steer_deg(kmh: float) -> float:
 	return lerpf(steer_deg.y, steer_deg.z, clampf((kmh - 100.0) / 200.0, 0.0, 1.0))
 
 
-## Put the car at rest at xf (local coords). Call from a physics frame.
+## Put the car at rest at xf (floating-origin local coords). Call from a physics frame.
+## A frozen body does not copy the physics transform back onto the node, so set both.
 func teleport(xf: Transform3D) -> void:
+	global_transform = xf
 	PhysicsServer3D.body_set_state(get_rid(), PhysicsServer3D.BODY_STATE_TRANSFORM, xf)
 	PhysicsServer3D.body_set_state(get_rid(), PhysicsServer3D.BODY_STATE_LINEAR_VELOCITY, Vector3.ZERO)
 	PhysicsServer3D.body_set_state(get_rid(), PhysicsServer3D.BODY_STATE_ANGULAR_VELOCITY, Vector3.ZERO)
+	reset_physics_interpolation()
 	drivetrain.gear = 1
 	reversing = false
 	_steer = 0.0
@@ -170,6 +236,8 @@ func teleport(xf: Transform3D) -> void:
 
 ## Floating origin (PLAN 2.1): move with the world, velocities untouched.
 func _on_origin_shift(d: Vector3) -> void:
+	if not is_inside_tree():
+		return  # swapped out this frame, freed at its end
 	global_position -= d
 	reset_physics_interpolation()
 	($Lights as CarLights).shift(d)

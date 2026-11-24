@@ -5,6 +5,7 @@ extends Control
 
 signal respawn_requested
 signal quit_requested
+signal car_selected(id: String)
 signal time_set_requested(hour: float)
 
 const ACCENT: Color = Color(1.0, 0.502, 0.0)
@@ -31,6 +32,9 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
+		var fm := get_parent().get_node_or_null("FullMap") as FullMap
+		if fm != null and fm.visible and not visible:
+			return
 		if visible:
 			close_menu()
 		else:
@@ -117,7 +121,9 @@ func _sync_from_settings() -> void:
 			if val_lbl != null:
 				val_lbl.text = str(ctrl.get_meta("fmt", "%.2f")) % float(v)
 		elif ctrl is OptionButton:
-			if k == "weather_mode":
+			if k == "car_id":
+				(ctrl as OptionButton).selected = maxi(CarRegistry.available_ids().find(str(v)), 0)
+			elif k == "weather_mode":
 				var modes: PackedStringArray = ["clear", "overcast", "rain"]
 				var mi: int = modes.find(str(v))
 				(ctrl as OptionButton).selected = maxi(mi, 0)
@@ -248,6 +254,7 @@ func _build_display_tab() -> void:
 	_add_check(vb, "VSync", "vsync")
 	_add_slider(vb, "Camera FOV Offset", "fov_offset", -10.0, 15.0, 1.0, "%+.0f deg")
 	_add_check(vb, "Show FPS in HUD (F3)", "fps_visible")
+	_add_check(vb, "Show Minimap in HUD", "minimap_visible")
 
 
 func _build_audio_tab() -> void:
@@ -262,7 +269,7 @@ func _build_controls_tab() -> void:
 	_add_slider(vb, "Steering Sensitivity", "steer_sensitivity", 0.5, 1.5, 0.05, "%.2fx")
 	_add_slider(vb, "Drift Countersteer Assist", "countersteer_assist", 0.0, 1.0, 0.05, "%.2f")
 	var info := Label.new()
-	info.text = "Keys: WASD/Arrows Drive  •  Space Handbrake  •  G Drift Mode  •  Shift DRS  •  C Camera  •  T +1h  •  R Respawn  •  N/B/M Radio"
+	info.text = "Keys: WASD/Arrows Drive  •  Space Handbrake  •  G Drift Mode  •  Shift DRS  •  C Camera  •  Q/E Look L/R  •  M Map  •  T +1h  •  R Respawn  •  N/B/V Radio"
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info.add_theme_color_override("font_color", TEXT_DIM)
 	vb.add_child(info)
@@ -271,6 +278,21 @@ func _build_controls_tab() -> void:
 func _build_gameplay_tab() -> void:
 	var vb: VBoxContainer = _tab_page("Gameplay")
 	_add_check(vb, "Auto Headlights at Night", "auto_headlights")
+	var car_ids: PackedStringArray = CarRegistry.available_ids()
+	var crow := _row(vb, "Car", "Applies immediately and is remembered (respawns you on the road)")
+	var copt := OptionButton.new()
+	for cid: String in car_ids:
+		copt.add_item(str(CarRegistry.get_def(cid)["name"]))
+	copt.custom_minimum_size.x = 220.0
+	copt.item_selected.connect(func(idx: int) -> void:
+		if _syncing:
+			return
+		Settings.car_id = car_ids[idx]
+		Settings.save_settings()
+		car_selected.emit(car_ids[idx])
+	)
+	crow.add_child(copt)
+	_ctrls["car_id"] = copt
 	var wrow := _row(vb, "Weather", "Clear / Overcast / Rain (Medium particles + wet road)")
 	var wopt := OptionButton.new()
 	for w: String in ["Clear", "Overcast", "Rain"]:

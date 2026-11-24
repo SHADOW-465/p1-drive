@@ -8,3 +8,16 @@ build/
 logs/
 *.uid
 refs/
+data/world/osm_cache/
+
+# Added Nov 24: unused heavy downloads and generated output (kept locally, not in git)
+assets/models/staging/bg-buildings/
+assets/models/staging/ccity/
+assets/models/staging/modern-night/
+data/world/osm_cache_lofoten/
+graphify-out/
+.git-broken-pointer
+tools/__pycache__/
+tools/_*.gd
+tools/_*.gd.uid
+tools/_*.tscn

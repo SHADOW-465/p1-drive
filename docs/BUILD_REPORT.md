@@ -21,7 +21,8 @@ Branch: `other/lowmed` (Mobile renderer, Medium default preset, Low lean preset,
 | Camera toggle (Chase / Hood) | `C` | `Y` |
 | Respawn on nearest road | `R` | `Back` |
 | Time skip (+1 hour) | `T` | `D-pad Down` |
-| Radio Next / Prev / Play-Pause | `N` / `B` / `M` | `D-pad Right` / `Left` / `Up` |
+| Radio Next / Prev / Play-Pause | `N` / `B` / `V` | `D-pad Right` / `Left` / `Up` |
+| World map (pan / zoom / center) | `M` (close: `M` / `Esc`; pan `WASD`; zoom scroll / `+/-`) | — |
 | FPS Counter toggle | `F3` | — |
 | Pause / Settings Menu | `Esc` | `Start` (`LB`/`RB` switch tabs) |
 
@@ -33,5 +34,6 @@ Branch: `other/lowmed` (Mobile renderer, Medium default preset, Low lean preset,
 
 ### Known gaps / deferred to `main` (`[FABLE]`) or later Milestone B/C tasks
 - **Graphics / Visuals (`[FABLE]`)**: Detailed McLaren P1 mesh (`T17a`), Forward+ High preset realism track (`T17e`), interior cockpit camera (`T17d`), High-quality sky/pass/city flyover & buildings (`T21–T24`), advanced weather/rain droplets/mist (`T32–T33`), sea/coast (`T34–T35`), and real-hardware 5-minute 60 FPS check (`T26`).
-- **Remaining `[OTHER]` tasks**: Procedural towns (`T27`), optional minimap (`T31`), viewpoints (`T36`), 500 km expansion (`T37`), companion/car 2/polish (`T38–T41`).
+- **Map (R6)**: rotating minimap (road network, speed zoom, player arrow, north marker, region name) with a Display setting to hide it. `M` opens the full map (pan, zoom, city / hill pass / coast names, player marker). Radio play-pause moved to `V` so `M` is the map. Shots: `docs/shots/r6_minimap_hud.png`, `docs/shots/r6_full_map.png`.
+- **Remaining `[OTHER]` tasks**: Procedural towns (`T27`), viewpoints (`T36`), 500 km expansion (`T37`), companion/car 2/polish (`T38–T41`).
 - **Audio & live GPU check**: `Radio` plays local `.mp3`/`.ogg` files from `Settings.music_dir` (`%USERPROFILE%\Music\P1Drive`); tested headless with missing folder (`"No music"`, zero errors). Live windowed GPU frame-time verification on target hardware (Ryzen 3 7320U / Radeon 610M) should be run via `play.bat --fps-log --autodrive` after merging.

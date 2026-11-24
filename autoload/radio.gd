@@ -1,6 +1,6 @@
 extends Node
 ## Local music radio (T30 / PLAN §10): scans Settings.music_dir for .mp3/.ogg,
-## loads bytes on a worker thread, auto-advances, N/B/M keys. Graceful when empty/missing.
+## loads bytes on a worker thread, auto-advances, N/B/V keys. Graceful when empty/missing.
 
 signal track_changed(text: String)
 

@@ -199,7 +199,8 @@ P1 (VehicleBody3D, car.gd; faces −Z; continuous_cd on)
 | `drs` (hold) | Shift | RB (10) |
 | `camera_toggle` | C | Y (3) |
 | `respawn` | R | Back (4) |
-| `radio_next` / `radio_prev` / `radio_toggle` | N / B / M | D-pad right (14) / left (13) / up (11) |
+| `radio_next` / `radio_prev` / `radio_toggle` | N / B / V | D-pad right (14) / left (13) / up (11) |
+| `map_toggle` | M | — |
 | `time_skip` (+1 h) | T | D-pad down (12) |
 | `fps_toggle` | F3 | — |
 | `pause` | Esc | Start (6) |

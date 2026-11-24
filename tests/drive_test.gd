@@ -21,7 +21,7 @@ func _physics_process(_dt: float) -> void:
 	if t_boot < 0:
 		if not car.freeze:
 			t_boot = f
-		elif f > 3600:
+		elif f > 14400 and Time.get_ticks_msec() > 60000:  # tile jobs run on wall time; headless frames take ~0.3 ms
 			_finish("boot timeout")
 		return
 	var k: int = f - t_boot

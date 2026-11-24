@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://cars/car.gd" id="1"]
 [ext_resource type="Script" path="res://cars/active_aero.gd" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://cars/car_lights.gd" id="4"]
 [ext_resource type="Script" path="res://cars/engine_audio.gd" id="5"]
 [ext_resource type="Script" path="res://cars/car_drift.gd" id="6"]
+[ext_resource type="Script" path="res://cars/cockpit.gd" id="7"]
 
 [sub_resource type="BoxShape3D" id="shape"]
 size = Vector3(1.9, 0.62, 4.4)
@@ -31,7 +32,7 @@ script = ExtResource("3")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.83, 0.42, -1.4685)
 use_as_steering = true
 wheel_roll_influence = 0.03
-wheel_radius = 0.34
+wheel_radius = 0.369
 wheel_rest_length = 0.12
 wheel_friction_slip = 1.35
 suspension_travel = 0.1
@@ -44,7 +45,7 @@ damping_relaxation = 5.5
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.83, 0.42, -1.4685)
 use_as_steering = true
 wheel_roll_influence = 0.03
-wheel_radius = 0.34
+wheel_radius = 0.369
 wheel_rest_length = 0.12
 wheel_friction_slip = 1.35
 suspension_travel = 0.1
@@ -57,7 +58,7 @@ damping_relaxation = 5.5
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.44, 1.2015)
 use_as_traction = true
 wheel_roll_influence = 0.03
-wheel_radius = 0.36
+wheel_radius = 0.389
 wheel_rest_length = 0.12
 wheel_friction_slip = 1.6
 suspension_travel = 0.1
@@ -70,7 +71,7 @@ damping_relaxation = 5.5
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.44, 1.2015)
 use_as_traction = true
 wheel_roll_influence = 0.03
-wheel_radius = 0.36
+wheel_radius = 0.389
 wheel_rest_length = 0.12
 wheel_friction_slip = 1.6
 suspension_travel = 0.1
@@ -102,3 +103,6 @@ script = ExtResource("5")
 
 [node name="Drift" type="Node3D" parent="."]
 script = ExtResource("6")
+
+[node name="Cockpit" type="Node3D" parent="."]
+script = ExtResource("7")

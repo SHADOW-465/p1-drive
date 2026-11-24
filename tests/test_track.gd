@@ -70,9 +70,7 @@ func _road() -> MeshInstance3D:
 	arrays[Mesh.ARRAY_INDEX] = idx
 	var mesh := ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	var mat := ShaderMaterial.new()
-	mat.shader = preload("res://shaders/road.gdshader")
-	mesh.surface_set_material(0, mat)
+	mesh.surface_set_material(0, TileNode.get_road_material())
 	var mi := MeshInstance3D.new()
 	mi.mesh = mesh
 	return mi
